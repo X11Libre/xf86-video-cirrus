@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/alp_hwcurs.c,v 1.5 2001/05/07 21:59:06 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/alp_hwcurs.c,v 1.4 2000/12/06 15:35:15 eich Exp $ */
 
 /* (c) Itai Nahshon */
 

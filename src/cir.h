@@ -1,4 +1,4 @@
-/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/cir.h,v 1.21 2002/01/25 21:56:01 tsi Exp $ */
+/* $XFree86: xc/programs/Xserver/hw/xfree86/drivers/cirrus/cir.h,v 1.20 2002/01/04 21:26:54 tsi Exp $ */
 
 /* (c) Itai Nahshon */
 
