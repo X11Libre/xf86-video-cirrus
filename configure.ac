@@ -23,7 +23,7 @@
 # Initialize Autoconf
 AC_PREREQ([2.60])
 AC_INIT([xf86-video-cirrus],
-        [1.5.2],
+        [1.5.3],
         [https://bugs.freedesktop.org/enter_bug.cgi?product=xorg],
         [xf86-video-cirrus])
 AC_CONFIG_SRCDIR([Makefile.am])
