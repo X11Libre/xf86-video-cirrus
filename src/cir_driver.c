@@ -43,9 +43,6 @@ static const OptionInfoRec *	CIRAvailableOptions(int chipid, int busid);
 static void	CIRIdentify(int flags);
 static Bool	CIRProbe(DriverPtr drv, int flags);
 
-static Bool lg_loaded = FALSE;
-static Bool alp_loaded = FALSE;
-
 #define CIR_VERSION 4000
 #define CIR_NAME "CIRRUS"
 #define CIR_DRIVER_NAME "cirrus"
@@ -170,16 +167,10 @@ CIRAvailableOptions(int chipid, int busid)
 	case PCI_CHIP_GD5464:
 	case PCI_CHIP_GD5464BD:
 	case PCI_CHIP_GD5465:
-		if (lg_loaded)
-			return LgAvailableOptions(chipid);
-		else
-			return NULL;
+		return LgAvailableOptions(chipid);
 
 	default:
-		if (alp_loaded)
-			return AlpAvailableOptions(chipid);
-		else
-			return NULL;
+		return AlpAvailableOptions(chipid);
 	}
 }
 
@@ -199,25 +190,6 @@ CIRProbe(DriverPtr drv, int flags)
     ErrorF("CirProbe\n");
 #endif
   
-    /*
-     * For PROBE_DETECT, make sure both sub-modules are loaded before
-     * calling xf86MatchPciInstances(), because the AvailableOptions()
-     * functions may be called before xf86MatchPciInstances() returns.
-     */
-    
-    if (flags & PROBE_DETECT) {
-	if (!lg_loaded) {
-	    if (xf86LoadDrvSubModule(drv, "cirrus_laguna")) {
-		lg_loaded = TRUE;
-	    }
-	}
-	if (!alp_loaded) {
-	    if (xf86LoadDrvSubModule(drv, "cirrus_alpine")) {
-		alp_loaded = TRUE;
-	    }
-	}
-    }
-
     if ((numDevSections = xf86MatchDevice(CIR_DRIVER_NAME,
 					  &devSections)) <= 0) {
 	return FALSE;
@@ -272,19 +244,8 @@ CIRProbe(DriverPtr drv, int flags)
 		     PCI_DEV_DEVICE_ID(pPci) == PCI_CHIP_GD5464 ||
 		     PCI_DEV_DEVICE_ID(pPci) == PCI_CHIP_GD5464BD ||
 		     PCI_DEV_DEVICE_ID(pPci) == PCI_CHIP_GD5465)) {
- 	    
- 	    if (!lg_loaded) {
- 		if (!xf86LoadDrvSubModule(drv, "cirrus_laguna")) 
-		    continue;
- 		lg_loaded = TRUE;
- 	    }
 	    pScrn = LgProbe(usedChips[i]);
  	} else {
- 	    if (!alp_loaded) {
- 		if (!xf86LoadDrvSubModule(drv, "cirrus_alpine")) 
- 		    continue;
- 		alp_loaded = TRUE;
- 	    }
  	    pScrn = AlpProbe(usedChips[i]);
  	}
  	
