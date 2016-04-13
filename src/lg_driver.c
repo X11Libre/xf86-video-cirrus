@@ -165,8 +165,6 @@ static int LgLinePitches[4][11] = {
 #define LG_MINOR_VERSION 0
 #define LG_PATCHLEVEL 0
 
-static MODULESETUPPROTO(lgSetup);
-
 static XF86ModuleVersionInfo lgVersRec =
 {
 	"cirrus_laguna",
@@ -187,20 +185,9 @@ static XF86ModuleVersionInfo lgVersRec =
  */
 _X_EXPORT XF86ModuleData cirrus_lagunaModuleData = {
     &lgVersRec,
-    lgSetup,
+    NULL,
     NULL
 };
-
-static pointer
-lgSetup(pointer module, pointer opts, int *errmaj, int *errmin)
-{
-    static Bool setupDone = FALSE;
-    
-    if (!setupDone) {
-	setupDone = TRUE;
-    }
-    return (pointer)1;
-}
 
 #endif /* XFree86LOADER */
 

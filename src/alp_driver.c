@@ -159,8 +159,6 @@ static int gd7556_MaxClocks[] = {  80100,  80100,  80100,  80100,  80100 };
 #define ALP_MINOR_VERSION 0
 #define ALP_PATCHLEVEL 0
 
-static MODULESETUPPROTO(alpSetup);
-
 static XF86ModuleVersionInfo alpVersRec =
 {
 	"cirrus_alpine",
@@ -181,19 +179,9 @@ static XF86ModuleVersionInfo alpVersRec =
  */
 _X_EXPORT XF86ModuleData cirrus_alpineModuleData = {
     &alpVersRec,
-    alpSetup,
+    NULL,
     NULL
 };
-
-static pointer
-alpSetup(pointer module, pointer opts, int *errmaj, int *errmin)
-{
-	static Bool setupDone = FALSE;
-	if (!setupDone) {
-		setupDone = TRUE;
-	}
-	return (pointer)1;
-}
 
 #endif /* XFree86LOADER */
 
