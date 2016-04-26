@@ -774,6 +774,16 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
      else
  	xf86SetDDCproperties(pScrn,xf86PrintEDID(
 		 xf86DoEDID_DDC2(XF86_SCRN_ARG(pScrn),pCir->I2CPtr1)));
+
+#ifdef XSERVER_LIBPCIACCESS
+     #ifndef PCI_CHIP_QEMU
+     #define PCI_CHIP_QEMU 0x1af4
+     #endif
+     if (!pScrn->monitor->DDC &&
+	((pCir->PciInfo->subvendor_id & 0xffff) == PCI_CHIP_QEMU)) {
+	pCir->NoAccel = TRUE;
+     }
+#endif
  
      /* Probe the possible LCD display */
      AlpProbeLCD(pScrn);
