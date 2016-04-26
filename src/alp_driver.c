@@ -466,6 +466,7 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 	vgaHWPtr hwp;
 	MessageType from, from1;
 	int i;
+	int defaultdepth;
 	int depth_flags;
 	ClockRangePtr clockRanges;
 	char *s;
@@ -551,11 +552,23 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 	    depth_flags |= Support32bppFb |
 			   SupportConvert32to24 |
 			   PreferConvert32to24;
+
+	/* use 16bpp in virt and on XenSource */
+	#ifndef PCI_CHIP_QEMU
+	#define PCI_CHIP_QEMU 0x1af4
+	#endif
+	#define PCI_CHIP_XENSOURCE 0x5853
+	if (((pCir->PciInfo->subvendor_id & 0xffff) == PCI_CHIP_QEMU) ||
+	    ((pCir->PciInfo->subvendor_id & 0xffff) == PCI_CHIP_XENSOURCE))
+	    defaultdepth = 16;
+	else
+	    defaultdepth = 24;
+
 	/*
 	 * The first thing we should figure out is the depth, bpp, etc.
 	 * We support both 24bpp and 32bpp layouts, so indicate that.
 	 */
-	if (!xf86SetDepthBpp(pScrn, 0, 0, 24, depth_flags)) {
+	if (!xf86SetDepthBpp(pScrn, 0, 0, defaultdepth, depth_flags)) {
 		return FALSE;
 	} else {
 		/* Check that the returned depth is one we support */
