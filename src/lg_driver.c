@@ -303,7 +303,9 @@ LgDoDDC(ScrnInfoPtr pScrn)
 
 	xf86SetDDCproperties(pScrn, MonInfo);
 
+#if LGuseI2C
 unmap_out:
+#endif /* LGuseI2C */
 	CirUnmapMem(pCir, pScrn->scrnIndex);
 
 	return MonInfo;
