@@ -271,8 +271,6 @@ CIRProbe(DriverPtr drv, int flags)
 _X_EXPORT Bool
 CirMapMem(CirPtr pCir, int scrnIndex)
 {
-	int mmioFlags;
-
 #ifdef CIR_DEBUG
 	ErrorF("CirMapMem\n");
 #endif
@@ -316,7 +314,6 @@ CirMapMem(CirPtr pCir, int scrnIndex)
 	} else {
 
 #ifndef XSERVER_LIBPCIACCESS
-		mmioFlags = VIDMEM_MMIO;
 		/*
 		 * For Alpha, we need to map SPARSE memory, since we need
 		 * byte/short access.  Common-level will automatically use
@@ -324,7 +321,7 @@ CirMapMem(CirPtr pCir, int scrnIndex)
 		 */
 
 		pCir->IOBase =
-		  xf86MapPciMem(scrnIndex, mmioFlags, pCir->PciTag,
+		  xf86MapPciMem(scrnIndex, VIDMEM_MMIO, pCir->PciTag,
 		       	        pCir->IOAddress, pCir->IoMapSize);
 		if (pCir->IOBase == NULL)
 			return FALSE;
