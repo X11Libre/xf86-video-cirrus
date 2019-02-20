@@ -48,7 +48,7 @@ cirrus_drv_la_SOURCES = \
 if XAA
 cirrus_drv_la_SOURCES += \
          alp_xaa.c \
-         alp_xaam.c
+         alp_xaam.c \
          lg_xaa.c \
          lg_xaa.h
 endif
