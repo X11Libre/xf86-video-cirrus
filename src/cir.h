@@ -39,8 +39,8 @@ typedef struct {
     Bool HasFBitBlt;
     CARD32 IOAddress;
     CARD32 FbAddress;
-    void * IOBase;
-    void * FbBase;
+    unsigned char *IOBase;
+    unsigned char *FbBase;
     long FbMapSize;
     long IoMapSize;
     int MinClock;
