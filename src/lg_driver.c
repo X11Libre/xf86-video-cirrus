@@ -359,7 +359,7 @@ LgDoDDC(ScrnInfoPtr pScrn)
     /*
      * Read and output monitor info using DDC2 over I2C bus.
      */
-    MonInfo = xf86DoEDID_DDC2(pScrn->scrnIndex, pCir->I2CPtr1);
+    MonInfo = xf86DoEDID_DDC2(XF86_SCRN_ARG(pScrn), pCir->I2CPtr1);
     xf86DrvMsg(pScrn->scrnIndex, X_INFO,
                 "I2C Monitor info: %p\n", (void *)MonInfo);
     xf86PrintEDID(MonInfo);
