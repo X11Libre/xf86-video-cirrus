@@ -21,28 +21,26 @@
 #define EXPERIMENTAL
 
 /*
- * All drivers should typically include these
+ * All drivers should typically include these.
  */
 #include "xf86.h"
 #include "xf86_OSproc.h"
 
 /*
- * All drivers need this
+ * All drivers need this.
  */
 
 #include "compiler.h"
 
 /*
- * Drivers that need to access the PCI config space directly need this
+ * Drivers that need to access the PCI config space directly need
+ * this.
  */
 #include "xf86Pci.h"
 
 /*
- * All drivers using the vgahw module need this
- */
-/*
- * This driver needs to be modified to not use vgaHW for multihead
- * operation
+ * All drivers using the vgahw module need this.  This driver needs
+ * to be modified to not use vgaHW for multihead operation.
  */
 #include "vgaHW.h"
 
@@ -52,19 +50,19 @@
 #endif
 
 /*
- * All drivers initialising the SW cursor need this
+ * All drivers initialising the SW cursor need this.
  */
 #include "mipointer.h"
 
 /*
- * need this for inputInfo
+ * Need this for inputInfo.
  */
 #include "inputstr.h"
 
 #include "micmap.h"
 
 /*
- * Needed by the Shadow Framebuffer
+ * Needed by the shadowfb.
  */
 #include "shadowfb.h"
 
@@ -98,11 +96,11 @@ static Bool LgCloseScreen(CLOSE_SCREEN_ARGS_DECL);
 static Bool LgSaveScreen(ScreenPtr pScreen, Bool mode);
 
 /*
- * Required if the driver supports mode switching
+ * Required if the driver supports mode switching.
  */
 Bool LgSwitchMode(SWITCH_MODE_ARGS_DECL);
 /*
- * Required if the driver supports moving the viewport
+ * Required if the driver supports moving the viewport.
  */
 void LgAdjustFrame(ADJUST_FRAME_ARGS_DECL);
 
@@ -114,7 +112,7 @@ ModeStatus LgValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode,
                         Bool verbose, int flags);
 
 /*
- * Internally used functions
+ * Internal functions
  */
 static void LgRestoreLgRegs(ScrnInfoPtr pScrn, LgRegPtr lgReg);
 static int LgFindLineData(int displayWidth, int bpp);
@@ -159,7 +157,7 @@ static const OptionInfoRec LgOptions[] = {
 };
 
 /*
- *                       1/4bpp   8bpp   15/16bpp  24bpp  32bpp
+ *                       1/4 bpp  8 bpp 15/16 bpp 24 bpp  32 bpp
  */
 static int gd5462_MaxClocks[] =
                         { 170000, 170000, 135100, 135100,  85500 };
@@ -170,7 +168,7 @@ static int gd5465_MaxClocks[] =
 
 /*
  * We're rather use skinny tiles, so put all of them at the head of
- * the table
+ * the table.
  */
 LgLineDataRec LgLineData[] = {
     { 5,  640, 0},
@@ -188,26 +186,26 @@ LgLineDataRec LgLineData[] = {
     {20, 5120, 1},
     {26, 6656, 1},
 /*
- * Sentinal to indicate end of table
+ * Sentinal to indicate end of table.
  */
     {-1, -1,   -1}
 };
 
 static int LgLinePitches[4][11] = {
 /*
- * 8
+ *  8 bpp
  */
     { 640, 1024, 1280, 1664, 2048, 2560, 3328, 4096, 5120, 6656, 0 },
 /*
- * 16
+ * 16 bpp
  */
     { 320,  512,  640,  832, 1024, 1280, 1664, 2048, 2560, 3328, 0 },
 /*
- * 24
+ * 24 bpp
  */
     { 213,  341,  426,  554,  682,  853, 1109, 1365, 1706, 2218, 0 },
 /*
- * 32
+ * 32 bpp
  */
     { 160,  256,  320,  416,  512,  640,  832, 1024, 1280, 1664, 0 }
 };
@@ -227,7 +225,7 @@ static XF86ModuleVersionInfo lgVersRec =
     XORG_VERSION_CURRENT,
     LG_MAJOR_VERSION, LG_MINOR_VERSION, LG_PATCHLEVEL,
 /*
- * This is a video driver
+ * This is a video driver.
  */
     ABI_CLASS_VIDEODRV,
     ABI_VIDEODRV_VERSION,
@@ -285,7 +283,7 @@ LgGetRec(ScrnInfoPtr pScrn)
                                         xnfcalloc(sizeof(LgRec), 1);
 
     /*
-     * Initialize it
+     * Initialize it.
      */
     pCir = CIRPTR(pScrn);
     pCir->chip.lg->oldBitmask = 0x00000000;
@@ -319,8 +317,8 @@ LgCountRam(ScrnInfoPtr pScrn)
     vgaHWProtect(pScrn, TRUE);
 
     /*
-     * The ROM BIOS scratchpad registers contain, among other things,
-     * the amount of installed RDRAM on the laguna chip.
+     * The ROM BIOS scratch pad registers contain, among other things,
+     * the amount of installed RDRAM for the Laguna chip.
      */
     SR14 = hwp->readSeq(hwp, 0x14);
 
@@ -346,7 +344,7 @@ LgDoDDC(ScrnInfoPtr pScrn)
     xf86MonPtr MonInfo = NULL;
 
     /*
-     * Map the CIR memory and MMIO areas
+     * Map the CIR memory and MMIO areas.
      */
     if (!CirMapMem(pCir, pScrn->scrnIndex))
         return FALSE;
@@ -359,7 +357,7 @@ LgDoDDC(ScrnInfoPtr pScrn)
     }
 
     /*
-     * Read and output monitor info using DDC2 over I2C bus
+     * Read and output monitor info using DDC2 over I2C bus.
      */
     MonInfo = xf86DoEDID_DDC2(pScrn->scrnIndex, pCir->I2CPtr1);
     xf86DrvMsg(pScrn->scrnIndex, X_INFO,
@@ -410,13 +408,13 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
         return FALSE;
 
     /*
-     * The vgahw module should be loaded here when needed
+     * The vgahw module should be loaded here when needed.
      */
     if (!xf86LoadSubModule(pScrn, "vgahw"))
         return FALSE;
 
     /*
-     * Allocate a vgaHWRec
+     * Allocate a vgaHWRec.
      */
     if (!vgaHWGetHWRec(pScrn))
         return FALSE;
@@ -426,7 +424,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
     vgaHWGetIOBase(hwp);
 
     /*
-     * Allocate the LgRec driverPrivate
+     * Allocate the LgRec driverPrivate.
      */
     if (!LgGetRec(pScrn))
         return FALSE;
@@ -449,7 +447,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
     pCir->Chipset = pCir->pEnt->chipset;
 
     /*
-     * Find the PCI info for this screen
+     * Find the PCI info for this screen.
      */
     pCir->PciInfo = xf86GetPciInfoForEntity(pCir->pEnt->index);
 #ifndef XSERVER_LIBPCIACCESS
@@ -467,13 +465,13 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     /*
-     * Set pScrn->monitor
+     * Set pScrn->monitor.
      */
     pScrn->monitor = pScrn->confScreen->monitor;
 
     /*
      * The first thing we should figure out is the depth, bpp, etc.
-     * We support both 24bpp and 32bpp layouts, so indicate that.
+     * We support both 24 bpp and 32 bpp layouts, so indicate that.
      */
     if (!xf86SetDepthBpp(pScrn, 0, 0, 0, Support24bppFb |
                                             Support32bppFb |
@@ -482,7 +480,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
         return FALSE;
     }
     /*
-     * Check that the returned depth is one we support
+     * Check that the returned depth is one we support.
      */
     switch (pScrn->depth) {
     case 8:
@@ -503,7 +501,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
     xf86PrintDepthBpp(pScrn);
 
     /*
-     * Get the depth24 pixmap format
+     * Get the depth24 pixmap format.
      */
     if (pScrn->depth == 24 && pix24bpp == 0)
         pix24bpp = xf86GetBppFromDepth(pScrn, 24);
@@ -514,7 +512,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
      */
     if (pScrn->depth > 8) {
         /*
-         * The defaults are OK for us
+         * The defaults are OK for us.
          */
         rgb zeros = { 0, 0, 0 };
 
@@ -527,7 +525,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
             return FALSE;
         } else {
             /*
-             * XXX check that weight returned is supported
+             * XXX Check that weight returned is supported.
              */
             ;
         }
@@ -538,12 +536,12 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
 
     /*
      * Collect all of the relevant option flags (fill in
-     * pScrn->options)
+     * pScrn->options).
      */
     xf86CollectOptions(pScrn, NULL);
 
     /*
-     * Process the options
+     * Process the options.
      */
     if (!(pCir->Options = malloc(sizeof(LgOptions))))
         return FALSE;
@@ -583,7 +581,8 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     /*
-     * Cirrus swapped the FB and IO registers in the 5465 (by design).
+     * Cirrus Logic swapped the FB and IO registers in the 5465
+     * (by design).
      */
     if (PCI_CHIP_GD5465 == pCir->Chipset) {
         fbPCIReg = 0;
@@ -594,7 +593,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     /*
-     * Find the frame buffer base address
+     * Find the frame buffer base address.
      */
     if (pCir->pEnt->device->MemBase != 0) {
         /*
@@ -632,7 +631,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
                 (unsigned long) pCir->FbAddress);
 
     /*
-     * Find the MMIO base address
+     * Find the MMIO base address.
      */
     if (pCir->pEnt->device->IOBase != 0) {
         /*
@@ -701,7 +700,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
 
     pCir->FbMapSize = pScrn->videoRam * 1024;
     /*
-     * 16K for moment,  will increase
+     * 16K for moment, will increase.
      */
     pCir->IoMapSize = 0x4000;
 
@@ -736,13 +735,13 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
 #endif
 
     /*
-     * Read and print the monitor DDC information
+     * Read and print the monitor DDC information.
      */
     pScrn->monitor->DDC = LgDoDDC(pScrn);
 
     /*
      * The gamma fields must be initialised when using the new cmap
-     * code
+     * code.
      */
     if (pScrn->depth > 1) {
         Gamma zeros = { 0.0, 0.0, 0.0 };
@@ -760,7 +759,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
     if ((s = xf86GetOptValString(pCir->Options, OPTION_ROTATE))) {
         if (!xf86NameCmp(s, "CW")) {
             /*
-             * accel is disabled below for shadowFB
+             * Acceleration is disabled below for shadowfb.
              */
             pCir->shadowFB = TRUE;
             pCir->rotate = 1;
@@ -796,26 +795,26 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     /*
-     * We use a programmable clock
+     * We use a programmable clock.
      */
     pScrn->progClock = TRUE;
 
     /*
-     * XXX Set HW cursor use
+     * XXX Set HW cursor use.
      */
 
     /*
-     * Set the min pixel clock
+     * Set the min pixel clock.
      */
     /*
-     * XXX Guess, need to check this
+     * XXX Guess, need to check this.
      */
     pCir->MinClock = 12000;
     xf86DrvMsg(pScrn->scrnIndex, X_DEFAULT,
                 "Min pixel clock is %d MHz\n",
                 pCir->MinClock / 1000);
     /*
-     * If the user has specified ramdac speed in the XF86Config
+     * If the user has specified RAMDAC speed in the XF86Config
      * file, we respect that setting.
      */
     if (pCir->pEnt->device->dacSpeeds[0]) {
@@ -855,7 +854,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
             break;
         default:
             /*
-             * Should not get here
+             * Should not get here.
              */
             speed = 0;
             break;
@@ -879,19 +878,19 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
      */
     clockRanges->clockIndex = -1;
     /*
-     * XXX check this
+     * XXX Check this.
      */
     clockRanges->interlaceAllowed = FALSE;
     /*
-     * XXX check this
+     * XXX Check this.
      */
     clockRanges->doubleScanAllowed = FALSE;
     /*
-     * XXX check this
+     * XXX Check this.
      */
     clockRanges->doubleScanAllowed = FALSE;
     /*
-     * XXX check this
+     * XXX Check this.
      */
     clockRanges->doubleScanAllowed = FALSE;
     clockRanges->ClockMulFactor = 1;
@@ -937,7 +936,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     /*
-     * Prune the modes marked as invalid
+     * Prune the modes marked as invalid.
      */
     xf86PruneDriverModes(pScrn);
 
@@ -950,31 +949,30 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
 
     /*
      * Set the CRTC parameters for all of the modes based on the type
-     * of mode, and the chipset's interlace requirements.
-     *
-     * Calling this is required if the mode->Crtc* values are used
-     * by the driver and if the driver doesn't provide code to set
+     * of mode, and the chipset's interlace requirements.  Calling
+     * this is required if the mode->Crtc* values are used by the
+     * driver and if the driver doesn't provide code to set
      * them.  They are not pre-initialised at all.
      */
     xf86SetCrtcForModes(pScrn, INTERLACE_HALVE_V);
 
     /*
-     * Set the current mode to the first in the list
+     * Set the current mode to the first in the list.
      */
     pScrn->currentMode = pScrn->modes;
 
     /*
-     * Print the list of modes being used
+     * Print the list of modes being used.
      */
     xf86PrintModes(pScrn);
 
     /*
-     * Set display resolution
+     * Set display resolution.
      */
     xf86SetDpi(pScrn, 0, 0);
 
     /*
-     * Load bpp-specific modules
+     * Load bpp-specific modules.
      */
     switch (pScrn->bitsPerPixel) {
     case 8:
@@ -989,7 +987,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     /*
-     * Load XAA if needed
+     * Load XAA if needed.
      */
     if (!pCir->NoAccel) {
 #ifdef HAVE_XAA_H
@@ -1006,7 +1004,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
     }
 
     /*
-     * Load ramdac if needed
+     * Load RAMDAC if needed.
      */
     if (pCir->HWCursor) {
         if (!xf86LoadSubModule(pScrn, "ramdac")) {
@@ -1133,7 +1131,7 @@ LgModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     }
 
     /*
-     * Initialise the ModeReg values
+     * Initialise the ModeReg values.
      */
     if (!vgaHWInit(pScrn, mode))
         return FALSE;
@@ -1265,7 +1263,7 @@ LgModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
         }
     } else if (16 == pScrn->bitsPerPixel) {
         /*
-         * !!! Assume 5-6-5 RGB mode (for now...)
+         * !!! Assume 5-6-5 RGB mode (for now...).
          */
         pCir->chip.lg->ModeReg.FORMAT = 0x1400;
 
@@ -1427,7 +1425,7 @@ LgModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     }
 
     /*
-     * Setup the appropriate memory interleaving
+     * Setup the appropriate memory interleaving.
      */
     pCir->chip.lg->ModeReg.DTTC |= (pCir->chip.lg->memInterleave << 8);
     pCir->chip.lg->ModeReg.TILE |= pCir->chip.lg->memInterleave & 0xC0;
@@ -1456,7 +1454,7 @@ LgModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     }
 
     /*
-     * Program the registers
+     * Programme the registers.
      */
     vgaHWProtect(pScrn, TRUE);
     hwp->writeMiscOut(hwp, hwp->ModeReg.MiscOutReg);
@@ -1471,7 +1469,7 @@ LgModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
     LgRestoreLgRegs(pScrn, &pCir->chip.lg->ModeReg);
 
     /*
-     * Programme the registers
+     * Programme the registers.
      */
     vgaHWRestore(pScrn, &hwp->ModeReg, VGA_SR_MODE | VGA_SR_CMAP);
 
@@ -1485,7 +1483,7 @@ LgFindLineData(int displayWidth, int bpp)
 {
     /*
      * Find the smallest tile-line-pitch such that the total byte
-     * pitch is greater than or equal to displayWidth*Bpp.
+     * pitch is greater than or equal to displayWidth * Bpp.
      */
     int i;
 
@@ -1586,10 +1584,10 @@ LgRestore(ScrnInfoPtr pScrn)
 }
 
 /*
- * Mandatory
+ * This gets called at the start of each server generation
  */
 /*
- * This gets called at the start of each server generation
+ * Mandatory
  */
 Bool
 LgScreenInit(SCREEN_INIT_ARGS_DECL)
@@ -1619,13 +1617,13 @@ LgScreenInit(SCREEN_INIT_ARGS_DECL)
     pCir = CIRPTR(pScrn);
 
     /*
-     * Map the VGA memory and get the VGA IO base
+     * Map the VGA memory and get the VGA IO base.
      */
     if (!vgaHWMapMem(pScrn))
         return FALSE;
 
     /*
-     * Map the CIR memory and MMIO areas
+     * Map the CIR memory and MMIO areas.
      */
     if (!CirMapMem(pCir, pScrn->scrnIndex))
         return FALSE;
@@ -1635,23 +1633,23 @@ LgScreenInit(SCREEN_INIT_ARGS_DECL)
     vgaHWGetIOBase(hwp);
 
     /*
-     * Save the current state
+     * Save the current state.
      */
     LgSave(pScrn);
 
     /*
-     * Initialise the first mode
+     * Initialise the first mode.
      */
     if (!LgModeInit(pScrn, pScrn->currentMode))
         return FALSE;
 
     /*
-     * Make things beautiful
+     * Make things beautiful.
      */
     LgSaveScreen(pScreen, SCREEN_SAVER_ON);
 
     /*
-     * Set the viewport
+     * Set the viewport.
      */
     LgAdjustFrame(ADJUST_FRAME_ARGS(pScrn,
                                     pScrn->frameX0,
@@ -1733,7 +1731,7 @@ LgScreenInit(SCREEN_INIT_ARGS_DECL)
 #endif
 
     /*
-     * Override the default mask/offset settings
+     * Override the default mask/offset settings.
      */
     if (pScrn->bitsPerPixel > 8) {
         for (i = 0; i < pScreen->numVisuals; i++) {
@@ -1750,7 +1748,7 @@ LgScreenInit(SCREEN_INIT_ARGS_DECL)
     }
 
     /*
-     * must be after RGB ordering fixed
+     * Must be after RGB ordering fixed.
      */
 
     fbPictureInit(pScreen, 0, 0);
@@ -1762,7 +1760,7 @@ LgScreenInit(SCREEN_INIT_ARGS_DECL)
 
 #ifdef HAVE_XAA_H
     /*
-     * Initialize XAA functions
+     * Initialize XAA functions.
      */
     if (!pCir->NoAccel) {
         if (!LgXAAInit(pScreen))
@@ -1779,12 +1777,12 @@ LgScreenInit(SCREEN_INIT_ARGS_DECL)
     xf86SetSilkenMouse(pScreen);
 
     /*
-     * Initialise cursor functions
+     * Initialise cursor functions.
      */
     miDCInitialize(pScreen, xf86GetPointerScreenFuncs());
 
     /*
-     * Initialize HW cursor layer
+     * Initialize HW cursor layer.
      */
     if (pCir->HWCursor) {
         if (!LgHWCursorInit(pScreen))
@@ -1793,7 +1791,7 @@ LgScreenInit(SCREEN_INIT_ARGS_DECL)
     }
 
     /*
-     * Initialise default colourmap
+     * Initialise default colourmap.
      */
     if (!miCreateDefColormap(pScreen))
         return FALSE;
@@ -1823,7 +1821,7 @@ LgScreenInit(SCREEN_INIT_ARGS_DECL)
     pScreen->CloseScreen = LgCloseScreen;
 
     /*
-     * Report any unused options (only for the first generation)
+     * Report any unused options (only for the first generation).
      */
     if (serverGeneration == 1)
         xf86ShowUnusedOptions(pScrn->scrnIndex, pScrn->options);
@@ -1957,9 +1955,8 @@ void LgAdjustFrame(ADJUST_FRAME_ARGS_DECL) {
 
 /*
  * This is called when VT switching back to the X server.  Its job is
- * to reinitialise the video mode.
- *
- * We may wish to unmap video/MMIO memory too.
+ * to reinitialise the video mode.  We may wish to unmap video/MMIO
+ * memory too.
  */
 /*
  * Mandatory
@@ -1977,7 +1974,7 @@ LgEnterVT(VT_FUNC_ARGS_DECL)
      * XXX Shouldn't this be in LeaveVT?
      */
     /*
-     * Disable HW cursor
+     * Disable HW cursor.
      */
     if (pCir->HWCursor)
         LgHideCursor(pScrn);
@@ -1990,9 +1987,8 @@ LgEnterVT(VT_FUNC_ARGS_DECL)
 
 /*
  * This is called when VT switching away from the X server.  Its job
- * is to restore the previous (text) mode.
- *
- * We may wish to remap video/MMIO memory too.
+ * is to restore the previous (text) mode.  We may wish to remap
+ * video/MMIO memory too.
  */
 /*
  * Mandatory
@@ -2009,7 +2005,7 @@ void LgLeaveVT(VT_FUNC_ARGS_DECL) {
      * XXX Shouldn't this be in EnterVT?
      */
     /*
-     * Enable HW cursor
+     * Enable HW cursor.
      */
     if (pCir->HWCursor)
         LgShowCursor(pScrn);
@@ -2066,7 +2062,7 @@ LgCloseScreen(CLOSE_SCREEN_ARGS_DECL)
 }
 
 /*
- * Free up any persistent data structures
+ * Free up any persistent data structures.
  */
 /*
  * Optional
@@ -2115,7 +2111,7 @@ LgValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode,
 }
 
 /*
- * Do screen blanking
+ * Do screen blanking.
  */
 /*
  * Mandatory
@@ -2135,12 +2131,12 @@ LgSaveScreen(ScreenPtr pScreen, int mode)
     if (pScrn != NULL && pScrn->vtSema) {
         if (unblank)
             /*
-             * Power up the palette DAC
+             * Power up the palette DAC.
              */
             memwb(0xB0, memrb(0xB0) & 0x7F);
         else
             /*
-             * Power down the palette DAC
+             * Power down the palette DAC.
              */
             memwb(0xB0, memrb(0xB0) | 0x80);
     }
@@ -2178,7 +2174,7 @@ LgSetClock(CirPtr pCir, vgaHWPtr hwp, int freq)
 }
 
 /*
- * CIRDisplayPowerManagementSet --
+ * LgDisplayPowerManagementSet --
  *
  * Sets VESA Display Power Management Signaling (DPMS) Mode.
  */
