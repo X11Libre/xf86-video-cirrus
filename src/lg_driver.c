@@ -349,7 +349,6 @@ LgDoDDC(ScrnInfoPtr pScrn)
     if (!CirMapMem(pCir, pScrn->scrnIndex))
         return FALSE;
 
-#if LGuseI2C
     if (!LgI2CInit(pScrn)) {
         xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
                     "I2C initialization failed\n");
@@ -371,13 +370,10 @@ LgDoDDC(ScrnInfoPtr pScrn)
     xf86PrintEDID(MonInfo);
     xf86DrvMsg(pScrn->scrnIndex, X_INFO,
                 "end of I2C Monitor info\n\n");
-#endif /* LGuseI2C */
 
     xf86SetDDCproperties(pScrn, MonInfo);
 
-#if LGuseI2C
-    unmap_out:
-#endif /* LGuseI2C */
+unmap_out:
     CirUnmapMem(pCir, pScrn->scrnIndex);
 
     return MonInfo;
