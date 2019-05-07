@@ -34,7 +34,9 @@ LgI2CPutBits(I2CBusPtr b, int clock, int data)
     if (data)
         regval |= 0x0001;
     memww(regno, regval);
-    /* ErrorF("LgI2CPutBits: %d %d\n", clock, data); */
+    /*
+    ErrorF("LgI2CPutBits: %d %d\n", clock, data);
+    */
 }
 
 static void
@@ -52,7 +54,9 @@ LgI2CGetBits(I2CBusPtr b, int *clock, int *data)
     regval = memrw(regno);
     *clock = (regval & 0x8000) != 0;
     *data = (regval & 0x0100) != 0;
-    /* ErrorF("LgI2CGetBits: %d %d\n", *clock, *data); */
+    /*
+    ErrorF("LgI2CGetBits: %d %d\n", *clock, *data);
+    */
 }
 
 Bool
