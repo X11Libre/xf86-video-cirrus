@@ -16,6 +16,11 @@
 #define _LG_PRIVATE_
 #include "lg.h"
 
+
+static char strI2CBus1[]    = "I2C bus 1";
+static char strI2CBus2[]    = "I2C bus 2";
+
+
 static void
 LgI2CPutBits(I2CBusPtr b, int clock, int data)
 {
@@ -75,7 +80,7 @@ LgI2CInit(ScrnInfoPtr pScrn)
 
     pCir->I2CPtr1 = I2CPtr;
 
-    I2CPtr->BusName             = "I2C bus 1";
+    I2CPtr->BusName             = strI2CBus1;
     I2CPtr->scrnIndex           = pScrn->scrnIndex;
     I2CPtr->I2CPutBits          = LgI2CPutBits;
     I2CPtr->I2CGetBits          = LgI2CGetBits;
@@ -90,7 +95,7 @@ LgI2CInit(ScrnInfoPtr pScrn)
 
     pCir->I2CPtr2 = I2CPtr;
 
-    I2CPtr->BusName             = "I2C bus 2";
+    I2CPtr->BusName             = strI2CBus2;
     I2CPtr->scrnIndex           = pScrn->scrnIndex;
     I2CPtr->I2CPutBits          = LgI2CPutBits;
     I2CPtr->I2CGetBits          = LgI2CGetBits;
