@@ -1052,10 +1052,6 @@ LgSave(ScrnInfoPtr pScrn)
     pCir->chip.lg->SavedReg.ExtVga[SR07] = hwp->readSeq(hwp, 0x07);
     pCir->chip.lg->ModeReg.ExtVga[SR0E] =
     pCir->chip.lg->SavedReg.ExtVga[SR0E] = hwp->readSeq(hwp, 0x0E);
-    pCir->chip.lg->ModeReg.ExtVga[SR12] =
-    pCir->chip.lg->SavedReg.ExtVga[SR12] = hwp->readSeq(hwp, 0x12);
-    pCir->chip.lg->ModeReg.ExtVga[SR13] =
-    pCir->chip.lg->SavedReg.ExtVga[SR13] = hwp->readSeq(hwp, 0x13);
     pCir->chip.lg->ModeReg.ExtVga[SR1E] =
     pCir->chip.lg->SavedReg.ExtVga[SR1E] = hwp->readSeq(hwp, 0x1E);
 
@@ -1530,8 +1526,6 @@ LgRestoreLgRegs(ScrnInfoPtr pScrn, LgRegPtr lgReg)
 
     hwp->writeSeq(hwp, 0x07, lgReg->ExtVga[SR07]);
     hwp->writeSeq(hwp, 0x0E, lgReg->ExtVga[SR0E]);
-    hwp->writeSeq(hwp, 0x12, lgReg->ExtVga[SR12]);
-    hwp->writeSeq(hwp, 0x13, lgReg->ExtVga[SR13]);
     hwp->writeSeq(hwp, 0x1E, lgReg->ExtVga[SR1E]);
     memww(0xC0, lgReg->FORMAT);
 

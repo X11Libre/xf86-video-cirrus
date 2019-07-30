@@ -31,8 +31,6 @@ enum {
 	/* SR regs */
 	SR07,
 	SR0E,
-	SR12,
-	SR13,
 	SR1E,
 	/* Must be last! */
 	LG_LAST_REG
