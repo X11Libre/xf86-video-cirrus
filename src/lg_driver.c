@@ -1081,6 +1081,12 @@ LgSave(ScrnInfoPtr pScrn)
 
     pCir->chip.lg->ModeReg.CONTROL =
     pCir->chip.lg->SavedReg.CONTROL = memrw(0x402);
+
+    pCir->chip.lg->ModeReg.RIFCtrl =
+    pCir->chip.lg->SavedReg.RIFCtrl = memrw(0x200);
+
+    pCir->chip.lg->ModeReg.RACCtrl =
+    pCir->chip.lg->SavedReg.RACCtrl = memrw(0x202);
 }
 
 /*
@@ -1549,6 +1555,9 @@ LgRestoreLgRegs(ScrnInfoPtr pScrn, LgRegPtr lgReg)
         memwb(0x8C, lgReg->BCLK);
 
     memww(0x402, lgReg->CONTROL);
+
+    memww(0x200, lgReg->RIFCtrl);
+    memww(0x202, lgReg->RACCtrl);
 }
 
 /*

@@ -44,6 +44,7 @@ typedef struct {
 	/* Laguna regs */
 	CARD8 TILE, BCLK;
 	CARD16 FORMAT, DTTC, TileCtrl, CONTROL;
+	CARD16 RIFCtrl, RACCtrl;
 	CARD32 VSC;
 } LgRegRec, *LgRegPtr;
 
