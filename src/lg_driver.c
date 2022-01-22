@@ -132,7 +132,7 @@ static int pix24bpp = 0;
 /*
  * This contains the functions needed by the server after loading the
  * driver module.  It must be supplied, and gets added the driver list
- * by the Module Setup funtion in the dynamic case.  In the static
+ * by the Module Setup function in the dynamic case.  In the static
  * case a reference to this is compiled in, and this requires that the
  * name of this DriverRec be an upper-case version of the driver name.
  */
@@ -186,7 +186,7 @@ LgLineDataRec LgLineData[] = {
     {20, 5120, 1},
     {26, 6656, 1},
 /*
- * Sentinal to indicate end of table.
+ * Sentinel to indicate end of table.
  */
     {-1, -1,   -1}
 };
@@ -1444,7 +1444,7 @@ LgModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 
         /*
          * The 5465's DTTC records _fetches_ per line, not tiles per
-         * line.  Fetchs are 128-byte fetches.
+         * line.  Fetches are 128-byte fetches.
          */
         if (pCir->chip.lg->ModeReg.DTTC & 0x0040) {
             /*

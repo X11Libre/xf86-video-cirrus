@@ -5,7 +5,7 @@
  * Support for the CL-GD7548: David Monniaux
  *
  * This is mainly a cut & paste from the MGA driver.
- * Original autors and contributors list include:
+ * Original authors and contributors list include:
  *	Radoslaw Kapitan, Andrew Vanderstock, Dirk Hohndel,
  *	David Dawes, Andrew E. Mileski, Leonard N. Zubkoff,
  *	Guy DESBIEF
