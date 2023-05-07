@@ -410,11 +410,11 @@ GetAccelPitchValues(ScrnInfoPtr pScrn)
 
 	/* The only line pitches the accelerator supports */
 #if 1
-	int accelWidths[] = { 640, 768, 800, 960, 1024, 1152, 1280,
+	const int accelWidths[] = { 640, 768, 800, 960, 1024, 1152, 1280,
 							1600, 1920, 2048, 0 };
 #else
-	int accelWidths[] = { 512, 576, 640, 768, 800, 960, 1024, 1152,
-							1280, 1536, 1600, 1920, 2048, 0 };
+	const int accelWidths[] = { 512, 576, 640, 768, 800, 960, 1024, 1152,
+                                            1280, 1536, 1600, 1920, 2048, 0 };
 #endif
 
 	switch (pCir->Chipset) {
