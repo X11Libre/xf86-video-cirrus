@@ -22,20 +22,19 @@ _X_EXPORT void
 cirRefreshArea(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 {
     CirPtr pCir = CIRPTR(pScrn);
-    int width, height, Bpp, FBPitch, x1, x2, y1, y2;
     unsigned char *src, *dst;
    
-    Bpp = pScrn->bitsPerPixel >> 3;
-    FBPitch = BitmapBytePad(pScrn->displayWidth * pScrn->bitsPerPixel);
+    int Bpp = pScrn->bitsPerPixel >> 3;
+    int FBPitch = BitmapBytePad(pScrn->displayWidth * pScrn->bitsPerPixel);
 
     while(num--) {
-        x1 = MAX(pbox->x1, 0);
-        y1 = MAX(pbox->y1, 0);
-        x2 = MIN(pbox->x2, pScrn->virtualX);
-        y2 = MIN(pbox->y2, pScrn->virtualY);
+        int x1 = MAX(pbox->x1, 0);
+        int y1 = MAX(pbox->y1, 0);
+        int x2 = MIN(pbox->x2, pScrn->virtualX);
+        int y2 = MIN(pbox->y2, pScrn->virtualY);
 
-        width = (x2 - x1) * Bpp;
-        height = y2 - y1;
+        int width = (x2 - x1) * Bpp;
+        int height = y2 - y1;
 
         if (width <= 0 || height <= 0)
             continue;
@@ -75,18 +74,17 @@ _X_EXPORT void
 cirRefreshArea8(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 {
     CirPtr pCir = CIRPTR(pScrn);
-    int count, width, height, x1, x2, y1, y2, dstPitch, srcPitch;
-    CARD8 *dstPtr, *srcPtr, *src;
-    CARD32 *dst;
 
-    dstPitch = pScrn->displayWidth;
-    srcPitch = -pCir->rotate * pCir->ShadowPitch;
+    int dstPitch = pScrn->displayWidth;
+    int srcPitch = -pCir->rotate * pCir->ShadowPitch;
 
     while(num--) {
-        x1 = MAX(pbox->x1, 0);
-        y1 = MAX(pbox->y1, 0);
-        x2 = MIN(pbox->x2, pScrn->virtualX);
-        y2 = MIN(pbox->y2, pScrn->virtualY);
+        int x1 = MAX(pbox->x1, 0);
+        int y1 = MAX(pbox->y1, 0);
+        int x2 = MIN(pbox->x2, pScrn->virtualX);
+        int y2 = MIN(pbox->y2, pScrn->virtualY);
+        int width, height;
+        CARD8 *dstPtr, *srcPtr;
 
         width = x2 - x1;
         y1 = y1 & ~3;
@@ -107,9 +105,9 @@ cirRefreshArea8(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
         }
 
         while(width--) {
-            src = srcPtr;
-            dst = (CARD32*)dstPtr;
-            count = height;
+            CARD8 *src = srcPtr;
+            CARD32 *dst = (CARD32*)dstPtr;
+            int count = height;
             while(count--) {
                 *(dst++) = src[0] | (src[srcPitch] << 8) |
 				(src[srcPitch * 2] << 16) |
@@ -129,18 +127,17 @@ _X_EXPORT void
 cirRefreshArea16(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 {
     CirPtr pCir = CIRPTR(pScrn);
-    int count, width, height, x1, x2, y1, y2, dstPitch, srcPitch;
-    CARD16 *dstPtr, *srcPtr, *src;
-    CARD32 *dst;
 
-    dstPitch = pScrn->displayWidth;
-    srcPitch = -pCir->rotate * pCir->ShadowPitch >> 1;
+    int dstPitch = pScrn->displayWidth;
+    int srcPitch = -pCir->rotate * pCir->ShadowPitch >> 1;
 
     while(num--) {
-        x1 = MAX(pbox->x1, 0);
-        y1 = MAX(pbox->y1, 0);
-        x2 = MIN(pbox->x2, pScrn->virtualX);
-        y2 = MIN(pbox->y2, pScrn->virtualY);
+        int x1 = MAX(pbox->x1, 0);
+        int y1 = MAX(pbox->y1, 0);
+        int x2 = MIN(pbox->x2, pScrn->virtualX);
+        int y2 = MIN(pbox->y2, pScrn->virtualY);
+        int width, height;
+        CARD16 *dstPtr, *srcPtr;
 
         width = x2 - x1;
         y1 = y1 & ~1;
@@ -163,9 +160,9 @@ cirRefreshArea16(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
         }
 
         while(width--) {
-            src = srcPtr;
-            dst = (CARD32*)dstPtr;
-            count = height;
+            CARD16 *src = srcPtr;
+            CARD32 *dst = (CARD32*)dstPtr;
+            int count = height;
             while(count--) {
                 *(dst++) = src[0] | (src[srcPitch] << 16);
                 src += srcPitch * 2;
@@ -184,18 +181,17 @@ _X_EXPORT void
 cirRefreshArea24(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 {
     CirPtr pCir = CIRPTR(pScrn);
-    int count, width, height, x1, x2, y1, y2, dstPitch, srcPitch;
-    CARD8 *dstPtr, *srcPtr, *src;
-    CARD32 *dst;
 
-    dstPitch = BitmapBytePad(pScrn->displayWidth * 24);
-    srcPitch = -pCir->rotate * pCir->ShadowPitch;
+    int dstPitch = BitmapBytePad(pScrn->displayWidth * 24);
+    int srcPitch = -pCir->rotate * pCir->ShadowPitch;
 
     while(num--) {
-        x1 = MAX(pbox->x1, 0);
-        y1 = MAX(pbox->y1, 0);
-        x2 = MIN(pbox->x2, pScrn->virtualX);
-        y2 = MIN(pbox->y2, pScrn->virtualY);
+        int x1 = MAX(pbox->x1, 0);
+        int y1 = MAX(pbox->y1, 0);
+        int x2 = MIN(pbox->x2, pScrn->virtualX);
+        int y2 = MIN(pbox->y2, pScrn->virtualY);
+        int width, height;
+        CARD8 *dstPtr, *srcPtr;
 
         width = x2 - x1;
         y1 = y1 & ~3;
@@ -216,9 +212,9 @@ cirRefreshArea24(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
         }
 
         while(width--) {
-            src = srcPtr;
-            dst = (CARD32*)dstPtr;
-            count = height;
+            CARD8 *src = srcPtr;
+            CARD32 *dst = (CARD32*)dstPtr;
+            int count = height;
             while(count--) {
                 dst[0] = src[0] | (src[1] << 8) | (src[2] << 16) |
 				(src[srcPitch] << 24);		
@@ -243,20 +239,20 @@ _X_EXPORT void
 cirRefreshArea32(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 {
     CirPtr pCir = CIRPTR(pScrn);
-    int count, width, height, x1, x2, y1, y2, dstPitch, srcPitch;
-    CARD32 *dstPtr, *srcPtr, *src, *dst;
 
-    dstPitch = pScrn->displayWidth;
-    srcPitch = -pCir->rotate * pCir->ShadowPitch >> 2;
+    int dstPitch = pScrn->displayWidth;
+    int srcPitch = -pCir->rotate * pCir->ShadowPitch >> 2;
 
     while(num--) {
-        x1 = MAX(pbox->x1, 0);
-        y1 = MAX(pbox->y1, 0);
-        x2 = MIN(pbox->x2, pScrn->virtualX);
-        y2 = MIN(pbox->y2, pScrn->virtualY);
+        int x1 = MAX(pbox->x1, 0);
+        int y1 = MAX(pbox->y1, 0);
+        int x2 = MIN(pbox->x2, pScrn->virtualX);
+        int y2 = MIN(pbox->y2, pScrn->virtualY);
 
-        width = x2 - x1;
-        height = y2 - y1;
+        int width = x2 - x1;
+        int height = y2 - y1;
+
+        CARD32 *dstPtr, *srcPtr;
 
         if (width <= 0 || height <= 0)
             continue;
@@ -274,9 +270,9 @@ cirRefreshArea32(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
         }
 
         while(width--) {
-            src = srcPtr;
-            dst = dstPtr;
-            count = height;
+            CARD32 *src = srcPtr;
+            CARD32 *dst = dstPtr;
+            int count = height;
             while(count--) {
                 *(dst++) = *src;
                 src += srcPitch;

@@ -230,7 +230,6 @@ LgFindCursorTile(ScrnInfoPtr pScrn, int *x, int *y, int *width, int *height,
   int tilesPerLine = LgLineData[pLg->lineDataIndex].tilesPerLine;
   int filledOutTileLines, leftoverMem;
   int yTile, xTile;
-  int tileNumber;
     
   filledOutTileLines = videoRam / (tilesPerLine * 2); /* tiles are 2K */
   leftoverMem = videoRam - filledOutTileLines*tilesPerLine*2;
@@ -276,7 +275,7 @@ LgFindCursorTile(ScrnInfoPtr pScrn, int *x, int *y, int *width, int *height,
       page = page & 0x1FF;
       *curAddr = bank*1024*1024L + page*2048 + (nY%tileHeight)*tileWidth;
     } else {
-       tileNumber = (tilesPerLine*nIL) * (yTile/nIL) + yTile % nIL;
+       int tileNumber = (tilesPerLine*nIL) * (yTile/nIL) + yTile % nIL;
        *curAddr = tileNumber * 2048;
     }
   }

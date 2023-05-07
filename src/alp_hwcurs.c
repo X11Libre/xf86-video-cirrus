@@ -51,7 +51,7 @@ AlpLoadSkewedCursor(CirPtr pCir, int x, int y) {
  
         unsigned char mem[2*MAXCURSORSIZE];
 	unsigned char *p1, *p2;
-	int i, j, m, a, b;
+	int i, a, b;
 	Bool cur64 = (CURSORWIDTH == 64);
 	int shift = (cur64? 1 : 0);
 
@@ -96,10 +96,10 @@ AlpLoadSkewedCursor(CirPtr pCir, int x, int y) {
 	and cyrsor bits.  */
 	p2 = mem + CURSORWIDTH/8 - (x>>3) - 1;
 	for (i = 0; i < 2*CURSORHEIGHT; i++) {
-		m = (-1)<<(x&7);
+		int m = (-1)<<(x&7);
 		p1 = p2;
 		p2 += CURSORWIDTH/8;
-		for (j = x>>3; j >= 0; j--) {
+		for (int j = x>>3; j >= 0; j--) {
 			*p1 &= m;
 			m = 0;
 			p1++;
