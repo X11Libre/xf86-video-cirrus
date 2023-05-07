@@ -2137,11 +2137,12 @@ AlpOffscreenAccelInit(ScrnInfoPtr pScrn)
 
     {
     /* TODO: probably not correct if rotated */
-        BoxRec box;
-	box.x1=0;
-	box.y1=0;
-	box.x2=pScrn->virtualX;
-	box.y2= pCir->offscreen_offset / pCir->pitch;
+	BoxRec box = {
+	    .x1 = 0,
+	    .y1 = 0,
+	    .x2 = pScrn->virtualX,
+	    .y2 = pCir->offscreen_offset / pCir->pitch
+	};
 	xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 		   "Using %d lines for offscreen memory\n",
 		   box.y2 - pScrn->virtualY);
