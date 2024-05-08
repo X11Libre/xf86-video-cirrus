@@ -278,9 +278,9 @@ LgGetRec(ScrnInfoPtr pScrn)
     if (pScrn->driverPrivate != NULL)
         return TRUE;
 
-    pScrn->driverPrivate = xnfcalloc(sizeof(CirRec), 1);
+    pScrn->driverPrivate = XNFcallocarray(sizeof(CirRec), 1);
     ((CirPtr) pScrn->driverPrivate)->chip.lg =
-                                        xnfcalloc(sizeof(LgRec), 1);
+                                        XNFcallocarray(sizeof(LgRec), 1);
 
     /*
      * Initialize it.
@@ -871,7 +871,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
      * Setup the ClockRanges, which describe what clock ranges are
      * available, and what sort of modes they can be used for.
      */
-    clockRanges = xnfcalloc(sizeof(ClockRange), 1);
+    clockRanges = XNFcallocarray(sizeof(ClockRange), 1);
     clockRanges->next = NULL;
     clockRanges->minClock = pCir->MinClock;
     clockRanges->maxClock = pCir->MaxClock;
