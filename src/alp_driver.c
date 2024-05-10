@@ -433,13 +433,13 @@ GetAccelPitchValues(ScrnInfoPtr pScrn)
 		if ((accelWidths[i] % pCir->Rounding == 0)
 		 && ((accelWidths[i] * pScrn->bitsPerPixel / 8) <= max_pitch)) {
 			n++;
-			linePitches = xnfrealloc(linePitches, n * sizeof(int));
+			linePitches = XNFrealloc(linePitches, n * sizeof(int));
 			linePitches[n - 1] = accelWidths[i];
 		}
 	}
 	/* Mark the end of the list */
 	if (n > 0) {
-		linePitches = xnfrealloc(linePitches, (n + 1) * sizeof(int));
+		linePitches = XNFrealloc(linePitches, (n + 1) * sizeof(int));
 		linePitches[n] = 0;
 	}
 	return linePitches;
