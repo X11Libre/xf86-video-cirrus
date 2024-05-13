@@ -42,13 +42,6 @@ cirrus_drv_la_SOURCES = \
          alp_i2c.c \
          lg_driver.c \
          lg.h \
+         lg_blit.h \
          lg_hwcurs.c \
          lg_i2c.c
-
-if XAA
-cirrus_drv_la_SOURCES += \
-         alp_xaa.c \
-         alp_xaam.c \
-         lg_xaa.c \
-         lg_xaa.h
-endif

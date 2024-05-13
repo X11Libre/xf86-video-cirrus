@@ -4,9 +4,6 @@
 #define CIR_H
 
 #include "xf86Cursor.h"
-#ifdef HAVE_XAA_H
-#include "xaa.h"
-#endif
 #include "xf86i2c.h"
 #include <string.h>
 #include <stdlib.h>
@@ -48,9 +45,6 @@ typedef struct {
     Bool NoAccel;
     Bool HWCursor;
     Bool UseMMIO;
-#ifdef HAVE_XAA_H
-    XAAInfoRecPtr AccelInfoRec;
-#endif
     xf86CursorInfoPtr CursorInfoRec;
     int DGAnumModes;
     DGAModePtr DGAModes;

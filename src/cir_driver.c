@@ -19,11 +19,6 @@
 #include "xf86.h"
 #include "xf86_OSproc.h"
 
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 6
-#include "xf86Resources.h"
-#endif
-/* All drivers need this */
-
 /* Drivers that need to access the PCI config space directly need this */
 #include "xf86Pci.h"
 
@@ -230,11 +225,7 @@ CIRProbe(DriverPtr drv, int flags)
                    pPci->device_id, pPci->bus, pPci->domain, pPci->dev, pPci->func);
         xf86DrvMsg(0, X_ERROR,
                    "cirrus: This driver cannot operate until it has been unloaded.\n");
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 13
-	xf86UnclaimPciSlot(pPci);
-#else
 	xf86UnclaimPciSlot(pPci, devSections[0]);
-#endif
         free(devSections);
         return FALSE;
     }

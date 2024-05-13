@@ -1,8 +1,8 @@
-#ifndef __LG_XAA_H
-#define __LG_XAA_H
+#ifndef __LG_BLIT_H
+#define __LG_BLIT_H
 
 /*
- * XAA acceleration for CL-GD546x -- The Laugna family
+ * bitBLT acceleration for CL-GD546x -- The Laguna family
  *
  * lg_xaa.h
  *
@@ -176,4 +176,4 @@ enum {						/* Select transparency compare */
 
 
 
-#endif  /* __LG_XAA_H */
+#endif  /* __LG_BLIT_H */

@@ -59,7 +59,7 @@ XORG_DRIVER_CHECK_EXT(XV, videoproto)
 XORG_DRIVER_CHECK_EXT(DPMSExtension, xextproto)
 
 # Obtain compiler/linker options for the driver dependencies
-PKG_CHECK_MODULES(XORG, [xorg-server >= 1.4 xproto fontsproto $REQUIRED_MODULES])
+PKG_CHECK_MODULES(XORG, [xorg-server >= 1.18 xproto fontsproto $REQUIRED_MODULES])
 
 # Checks for libraries.
 SAVE_CPPFLAGS="$CPPFLAGS"
@@ -67,27 +67,7 @@ CPPFLAGS="$CPPFLAGS $XORG_CFLAGS"
 AC_CHECK_DECL(XSERVER_LIBPCIACCESS,
               [XSERVER_LIBPCIACCESS=yes],[XSERVER_LIBPCIACCESS=no],
               [#include "xorg-server.h"])
-AC_CHECK_HEADER(xf1bpp.h,[AC_DEFINE(HAVE_XF1BPP, 1, [Have 1bpp support])],[])
-AC_CHECK_HEADER(xf4bpp.h,[AC_DEFINE(HAVE_XF4BPP, 1, [Have 4bpp support])],[])
 CPPFLAGS="$SAVE_CPPFLAGS"
-
-AC_ARG_ENABLE(xaa,
-              AS_HELP_STRING([--enable-xaa],
-                             [Enable legacy X Acceleration Architecture (XAA) [default=auto]]),
-              [XAA="$enableval"],
-              [XAA=auto])
-if test "x$XAA" != xno; then
-        save_CFLAGS=$CFLAGS
-        save_CPPFLAGS=$CPPFLAGS
-        CFLAGS=$XORG_CFLAGS
-        CPPFLAGS="$XORG_CFLAGS"
-        AC_CHECK_HEADERS([xaa.h], XAA=yes, XAA=no)
-        CFLAGS=$save_CFLAGS
-        CPPFLAGS=$save_CPPFLAGS
-fi
-AC_MSG_CHECKING([whether to include XAA support])
-AM_CONDITIONAL(XAA, test "x$XAA" = xyes)
-AC_MSG_RESULT([$XAA])
 
 if test "x$XSERVER_LIBPCIACCESS" = xyes; then
     PKG_CHECK_MODULES([PCIACCESS], [pciaccess >= 0.8.0])

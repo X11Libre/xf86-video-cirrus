@@ -40,10 +40,6 @@ typedef struct {
 } AlpRegRec, *AlpRegPtr;
 
 extern Bool AlpHWCursorInit(ScreenPtr pScreen, int size);
-#ifdef HAVE_XAA_H
-extern Bool AlpXAAInit(ScreenPtr pScreen);
-extern Bool AlpXAAInitMMIO(ScreenPtr pScreen);
-#endif
 extern Bool AlpDGAInit(ScreenPtr pScreen);
 extern Bool AlpI2CInit(ScrnInfoPtr pScrn);
 

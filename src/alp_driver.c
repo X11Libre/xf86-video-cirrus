@@ -31,11 +31,6 @@
 /* This driver needs to be modified to not use vgaHW for multihead operation */
 #include "vgaHW.h"
 
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 6
-#include "xf86RAC.h"
-#include "xf86Resources.h"
-#endif
-
 /* All drivers initialising the SW cursor need this */
 #include "mipointer.h"
 
@@ -49,13 +44,6 @@
 
 /* Framebuffer memory manager */
 #include "xf86fbman.h"
-
-#if HAVE_XF4BPP
-#include "xf4bpp.h"
-#endif
-#if HAVE_XF1BPP
-#include "xf1bpp.h"
-#endif
 
 #include "fb.h"
 
@@ -109,12 +97,7 @@ static void AlpSetClock(CirPtr pCir, vgaHWPtr hwp, int freq);
 static void AlpOffscreenAccelInit(ScrnInfoPtr pScrn);
 
 static void	AlpDisplayPowerManagementSet(ScrnInfoPtr pScrn,
-											int PowerManagementMode, int flags);
-
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12
-static void PC98CIRRUS755xEnable(ScrnInfoPtr pScrn);
-static void PC98CIRRUS755xDisable(ScrnInfoPtr pScrn);
-#endif
+                                             int PowerManagementMode, int flags);
 
 /*
  * This is intentionally screen-independent.  It indicates the binding
@@ -490,12 +473,7 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 
 	pCir = CIRPTR(pScrn);
 	pCir->pScrn = pScrn;
-
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12
-	pCir->PIOReg = hwp->PIOOffset + 0x3CE;
-#else
-	pCir->PIOReg = 0x3CE;
-#endif
+	pCir->PIOReg = 0x3CE; /* was hwp->PIOOffset + 0x3CE */
 
 	/* Get the entity, and make sure it is PCI. */
 	pCir->pEnt = xf86GetEntityInfo(pScrn->entityList[0]);
@@ -513,9 +491,6 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 			      PCI_DEV_FUNC(pCir->PciInfo));
 #endif
 
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12
-    if (!xf86IsPc98())
-#endif
     if (xf86LoadSubModule(pScrn, "int10"))
     {
 	xf86DrvMsg(pScrn->scrnIndex,X_INFO,"initializing int10\n");
@@ -1055,50 +1030,19 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 	/* Set display resolution */
 	xf86SetDpi(pScrn, 0, 0);
 
-	/* Load bpp-specific modules */
-	switch (pScrn->bitsPerPixel) {
-#ifdef HAVE_XF1BPP
-	case 1:  
-	    if (xf86LoadSubModule(pScrn, "xf1bpp") == NULL) {
-	        AlpFreeRec(pScrn);
-		return FALSE;
-	    } 
-	    break;
-#endif
-#ifdef HAVE_XF4BPP
-	case 4:  
-	    if (xf86LoadSubModule(pScrn, "xf4bpp") == NULL) {
-	        AlpFreeRec(pScrn);
-		return FALSE;
-	    } 
-	    break;
-#endif
-	case 8:
-	case 16:
-	case 24:
-	case 32:
-	    if (xf86LoadSubModule(pScrn, "fb") == NULL) {
-	        AlpFreeRec(pScrn);
-		return FALSE;
-	    } 
-	    break;
+	/* Load fb module */
+	if (xf86LoadSubModule(pScrn, "fb") == NULL) {
+	    AlpFreeRec(pScrn);
+	    return FALSE;
 	}
 
-	/* Load XAA if needed */
+	/* Use shadowfb for acceleration */
 	if (!pCir->NoAccel) {
-#ifdef HAVE_XAA_H
-		if (!xf86LoadSubModule(pScrn, "xaa"))
-#else
-		if (1)
-#endif
-                {
-			xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-				   "Falling back to shadowfb\n");
-			pCir->NoAccel = TRUE;
-			pCir->shadowFB = TRUE;
-		}
+	    xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		       "Falling back to shadowfb\n");
+	    pCir->NoAccel = TRUE;
+	    pCir->shadowFB = TRUE;
 	}
-
 
 	/* Load ramdac if needed */
 	if (pCir->HWCursor) {
@@ -1413,11 +1357,6 @@ AlpModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 
 	vgaHWProtect(pScrn, FALSE);
 
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12
-	if (xf86IsPc98())
-		PC98CIRRUS755xEnable(pScrn);
-#endif
-
 	return TRUE;
 }
 
@@ -1556,22 +1495,8 @@ AlpScreenInit(SCREEN_INIT_ARGS_DECL)
 	 */
 
 	switch (pScrn->bitsPerPixel) {
-#ifdef HAVE_XF1BPP
 	case 1:
-	    ret = xf1bppScreenInit(pScreen, FbBase,
-				   width, height,
-				   pScrn->xDpi, pScrn->yDpi,
-				   displayWidth);
-	    break;
-#endif
-#ifdef HAVE_XF4BPP
 	case 4:
-	    ret = xf4bppScreenInit(pScreen, FbBase,
-				   width, height,
-				   pScrn->xDpi, pScrn->yDpi,
-				   displayWidth);
-	    break;
-#endif
 	case 8:
 	case 16:
 	case 24:
@@ -1650,14 +1575,8 @@ AlpScreenInit(SCREEN_INIT_ARGS_DECL)
 	    }
 	}
 
-	if (!pCir->NoAccel) { /* Initialize XAA functions */
+	if (!pCir->NoAccel) { /* Initialize acceleration functions */
 	    AlpOffscreenAccelInit(pScrn);
-#ifdef HAVE_XAA_H
-	    if (!(pCir->UseMMIO ? AlpXAAInitMMIO(pScreen) :
-		  AlpXAAInit(pScreen)))
-	      xf86DrvMsg(pScrn->scrnIndex, X_ERROR, 
-			 "Could not initialize XAA\n");
-#endif
 	}
 
 #if 1
@@ -1835,11 +1754,6 @@ AlpLeaveVT(VT_FUNC_ARGS_DECL)
 
 	AlpRestore(pScrn);
 	vgaHWLock(hwp);
-
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12
-	if (xf86IsPc98())
-		PC98CIRRUS755xDisable(pScrn);
-#endif
 }
 
 
@@ -1864,11 +1778,6 @@ AlpCloseScreen(CLOSE_SCREEN_ARGS_DECL)
 	    CirUnmapMem(pCir, pScrn->scrnIndex);
 	}
 
-#ifdef HAVE_XAA_H
-	if (pCir->AccelInfoRec)
-		XAADestroyInfoRec(pCir->AccelInfoRec);
-	pCir->AccelInfoRec = NULL;
-#endif
 	if (pCir->CursorInfoRec)
 		xf86DestroyCursorInfoRec(pCir->CursorInfoRec);
 	pCir->CursorInfoRec = NULL;
@@ -1878,11 +1787,6 @@ AlpCloseScreen(CLOSE_SCREEN_ARGS_DECL)
 	pCir->DGAModes = NULL;
 
 	pScrn->vtSema = FALSE;
-
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12
-	if (xf86IsPc98())
-		PC98CIRRUS755xDisable(pScrn);
-#endif
 
 	pScreen->CloseScreen = pCir->CloseScreen;
 	return (*pScreen->CloseScreen)(CLOSE_SCREEN_ARGS);
@@ -2148,53 +2052,3 @@ AlpOffscreenAccelInit(ScrnInfoPtr pScrn)
 		   box.y2 - pScrn->virtualY);
     }
 }
-
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12
-static void
-PC98CIRRUS755xEnable(ScrnInfoPtr pScrn)  /*  enter_aile()  */
-{
-   unsigned int  index,data;
-   vgaHWPtr hwp = VGAHWPTR(pScrn);
-
-   outb(0xfac, 0x02);
-
-   outb(0x68, 0x0e);
-   outb(0x6a, 0x07);
-   outb(0x6a, 0x8f);
-   outb(0x6a, 0x06);
-
-   outw(VGA_SEQ_INDEX, 0x1206);         /*  unlock cirrus special  */
-
-   index = hwp->IOBase + VGA_CRTC_INDEX_OFFSET;
-   data  = hwp->IOBase + VGA_CRTC_DATA_OFFSET;
-   outb(index, 0x3c);
-   outb(data,  inb(data) & 0xef);
-   outb(index, 0x1a);
-   outb(data,  inb(data) & 0xf3);
-}
-
-static void
-PC98CIRRUS755xDisable(ScrnInfoPtr pScrn)  /*  leave_aile()  */
-{
-   unsigned int  index,data;
-   vgaHWPtr hwp = VGAHWPTR(pScrn);
-
-   outw(VGA_SEQ_INDEX, 0x1206);         /*  unlock cirrus special  */
-
-   index = hwp->IOBase + VGA_CRTC_INDEX_OFFSET;
-   data  = hwp->IOBase + VGA_CRTC_DATA_OFFSET;
-   outb(index, 0x3c);
-   outb(data,  0x71);
-   outb(index, 0x1a);
-   outb(data,  inb(data) | 0x0c);
-
-   outb(0xfac,0x00);
-
-   outb(0x68, 0x0f);
-   outb(0x6a, 0x07);
-   outb(0x6a, 0x8e);
-   outb(0x6a, 0x21);
-   outb(0x6a, 0x69);
-   outb(0x6a, 0x06);
-}
-#endif

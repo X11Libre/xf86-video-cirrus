@@ -26,7 +26,7 @@
 #include "cir.h"
 #define _LG_PRIVATE_
 #include "lg.h"
-#include "lg_xaa.h" /* For BitBLT engine macros */
+#include "lg_blit.h" /* For BitBLT engine macros */
 
 /*
 #define LG_CURSOR_DEBUG

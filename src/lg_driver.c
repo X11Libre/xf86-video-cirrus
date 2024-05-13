@@ -44,11 +44,6 @@
  */
 #include "vgaHW.h"
 
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 6
-#include "xf86RAC.h"
-#include "xf86Resources.h"
-#endif
-
 /*
  * All drivers initialising the SW cursor need this.
  */
@@ -433,12 +428,7 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
 
     pCir = CIRPTR(pScrn);
     pCir->pScrn = pScrn;
-
-#if GET_ABI_MAJOR(ABI_VIDEODRV_VERSION) < 12
-    pCir->PIOReg = hwp->PIOOffset + 0x3CE;
-#else
-    pCir->PIOReg = 0x3CE;
-#endif
+    pCir->PIOReg = 0x3CE; /* was hwp->PIOOffset + 0x3CE */
 
     /*
      * Get the entity, and make sure it is PCI.
@@ -974,35 +964,21 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
     xf86SetDpi(pScrn, 0, 0);
 
     /*
-     * Load bpp-specific modules.
+     * Load fb module.
      */
-    switch (pScrn->bitsPerPixel) {
-    case 8:
-    case 16:
-    case 24:
-    case 32:
-        if (xf86LoadSubModule(pScrn, "fb") == NULL) {
-            LgFreeRec(pScrn);
-            return FALSE;
-        }
-        break;
+    if (xf86LoadSubModule(pScrn, "fb") == NULL) {
+	LgFreeRec(pScrn);
+	return FALSE;
     }
 
     /*
-     * Load XAA if needed.
+     * Use shadowfb for acceleration.
      */
     if (!pCir->NoAccel) {
-#ifdef HAVE_XAA_H
-        if (!xf86LoadSubModule(pScrn, "xaa"))
-#else
-        if (1)
-#endif
-        {
-            xf86DrvMsg(pScrn->scrnIndex, X_INFO,
-                        "Falling back to shadowfb\n");
-            pCir->NoAccel = TRUE;
-            pCir->shadowFB = TRUE;
-        }
+	xf86DrvMsg(pScrn->scrnIndex, X_INFO,
+		   "Falling back to shadowfb\n");
+	pCir->NoAccel = TRUE;
+	pCir->shadowFB = TRUE;
     }
 
     /*
@@ -1763,16 +1739,6 @@ LgScreenInit(SCREEN_INIT_ARGS_DECL)
      */
     xf86SetBlackWhitePixels(pScreen);
 
-#ifdef HAVE_XAA_H
-    /*
-     * Initialize XAA functions.
-     */
-    if (!pCir->NoAccel) {
-        if (!LgXAAInit(pScreen))
-        xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-                    "Could not initialize XAA\n");
-    }
-#endif
 #if 1
     pCir->DGAModeInit = LgModeInit;
     if (!CirDGAInit(pScreen))
@@ -2045,12 +2011,6 @@ LgCloseScreen(CLOSE_SCREEN_ARGS_DECL)
 
         CirUnmapMem(pCir, pScrn->scrnIndex);
     }
-
-#ifdef HAVE_XAA_H
-    if (pCir->AccelInfoRec)
-    XAADestroyInfoRec(pCir->AccelInfoRec);
-    pCir->AccelInfoRec = NULL;
-#endif
 
     if (pCir->CursorInfoRec)
         xf86DestroyCursorInfoRec(pCir->CursorInfoRec);
