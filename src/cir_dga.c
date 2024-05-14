@@ -179,7 +179,7 @@ Cir_SetViewport(
    CirPtr pCir = CIRPTR(pScrn);
    vgaHWPtr hwp = VGAHWPTR(pScrn);
 
-   pScrn->AdjustFrame(ADJUST_FRAME_ARGS(pScrn, x, y));
+   pScrn->AdjustFrame(pScrn, x, y);
 
    while((hwp->readST01(hwp) & 0x08));
    while(!(hwp->readST01(hwp) & 0x08));

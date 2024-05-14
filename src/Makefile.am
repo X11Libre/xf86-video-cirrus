@@ -35,7 +35,6 @@ cirrus_drv_la_SOURCES = \
          CirrusClk.c \
          cir_shadow.c \
          cir_pcirename.h \
-         compat-api.h \
          alp_driver.c \
          alp.h \
          alp_hwcurs.c \

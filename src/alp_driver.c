@@ -70,20 +70,20 @@ static void AlpProbeI2C(int scrnIndex);
 /* Mandatory functions */
 
 Bool AlpPreInit(ScrnInfoPtr pScrn, int flags);
-Bool AlpScreenInit(SCREEN_INIT_ARGS_DECL);
-Bool AlpEnterVT(VT_FUNC_ARGS_DECL);
-void AlpLeaveVT(VT_FUNC_ARGS_DECL);
-static Bool	AlpCloseScreen(CLOSE_SCREEN_ARGS_DECL);
+Bool AlpScreenInit(ScreenPtr pScreen, int argc, char **argv);
+Bool AlpEnterVT(ScrnInfoPtr arg);
+void AlpLeaveVT(ScrnInfoPtr arg);
+static Bool	AlpCloseScreen(ScreenPtr pScreen);
 static Bool	AlpSaveScreen(ScreenPtr pScreen, int mode);
 
 /* Required if the driver supports mode switching */
-Bool AlpSwitchMode(SWITCH_MODE_ARGS_DECL);
+Bool AlpSwitchMode(ScrnInfoPtr arg, DisplayModePtr mode);
 /* Required if the driver supports moving the viewport */
-void AlpAdjustFrame(ADJUST_FRAME_ARGS_DECL);
+void AlpAdjustFrame(ScrnInfoPtr arg, int x, int y);
 
 /* Optional functions */
-void AlpFreeScreen(FREE_SCREEN_ARGS_DECL);
-ModeStatus AlpValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode,
+void AlpFreeScreen(ScrnInfoPtr arg);
+ModeStatus AlpValidMode(ScrnInfoPtr arg, DisplayModePtr mode,
 			Bool verbose, int flags);
 /* Internally used functions */
 static void	AlpSave(ScrnInfoPtr pScrn);
@@ -737,7 +737,7 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
      }
      else
  	xf86SetDDCproperties(pScrn,xf86PrintEDID(
-		 xf86DoEDID_DDC2(XF86_SCRN_ARG(pScrn),pCir->I2CPtr1)));
+		 xf86DoEDID_DDC2(pScrn,pCir->I2CPtr1)));
 
 #ifdef XSERVER_LIBPCIACCESS
      #ifndef PCI_CHIP_QEMU
@@ -1393,7 +1393,7 @@ AlpRestore(ScrnInfoPtr pScrn)
 /* This gets called at the start of each server generation */
 
 Bool
-AlpScreenInit(SCREEN_INIT_ARGS_DECL)
+AlpScreenInit(ScreenPtr pScreen, int argc, char **argv)
 {
 	ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
 	vgaHWPtr hwp;
@@ -1444,7 +1444,7 @@ AlpScreenInit(SCREEN_INIT_ARGS_DECL)
 	AlpSaveScreen(pScreen, SCREEN_SAVER_ON);
 
 	/* Set the viewport */
-	AlpAdjustFrame(ADJUST_FRAME_ARGS(pScrn, pScrn->frameX0, pScrn->frameY0));
+	AlpAdjustFrame(pScrn, pScrn->frameX0, pScrn->frameY0);
 
 	/*
 	 * The next step is to setup the screen's visuals, and initialise the
@@ -1658,9 +1658,8 @@ AlpScreenInit(SCREEN_INIT_ARGS_DECL)
 
 /* Usually mandatory */
 Bool
-AlpSwitchMode(SWITCH_MODE_ARGS_DECL)
+AlpSwitchMode(ScrnInfoPtr pScrn, DisplayModePtr mode)
 {
-	SCRN_INFO_PTR(arg);
 	return AlpModeInit(pScrn, mode);
 }
 
@@ -1671,9 +1670,8 @@ AlpSwitchMode(SWITCH_MODE_ARGS_DECL)
  */
 /* Usually mandatory */
 void
-AlpAdjustFrame(ADJUST_FRAME_ARGS_DECL)
+AlpAdjustFrame(ScrnInfoPtr pScrn, int x, int y)
 {
-	SCRN_INFO_PTR(arg);
 	int Base, tmp;
 	vgaHWPtr hwp;
 
@@ -1714,9 +1712,8 @@ AlpAdjustFrame(ADJUST_FRAME_ARGS_DECL)
 
 /* Mandatory */
 Bool
-AlpEnterVT(VT_FUNC_ARGS_DECL)
+AlpEnterVT(ScrnInfoPtr pScrn)
 {
-	SCRN_INFO_PTR(arg);
 	CirPtr pCir = CIRPTR(pScrn);
 	Bool ret;
 
@@ -1744,9 +1741,8 @@ AlpEnterVT(VT_FUNC_ARGS_DECL)
 
 /* Mandatory */
 void
-AlpLeaveVT(VT_FUNC_ARGS_DECL)
+AlpLeaveVT(ScrnInfoPtr pScrn)
 {
-	SCRN_INFO_PTR(arg);
 	vgaHWPtr hwp = VGAHWPTR(pScrn);
 #ifdef ALP_DEBUG
 	ErrorF("AlpLeaveVT\n");
@@ -1766,7 +1762,7 @@ AlpLeaveVT(VT_FUNC_ARGS_DECL)
 
 /* Mandatory */
 static Bool
-AlpCloseScreen(CLOSE_SCREEN_ARGS_DECL)
+AlpCloseScreen(ScreenPtr pScreen)
 {
 	ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
 	vgaHWPtr hwp = VGAHWPTR(pScrn);
@@ -1789,7 +1785,7 @@ AlpCloseScreen(CLOSE_SCREEN_ARGS_DECL)
 	pScrn->vtSema = FALSE;
 
 	pScreen->CloseScreen = pCir->CloseScreen;
-	return (*pScreen->CloseScreen)(CLOSE_SCREEN_ARGS);
+	return (*pScreen->CloseScreen)(pScreen);
 }
 
 
@@ -1797,9 +1793,8 @@ AlpCloseScreen(CLOSE_SCREEN_ARGS_DECL)
 
 /* Optional */
 void
-AlpFreeScreen(FREE_SCREEN_ARGS_DECL)
+AlpFreeScreen(ScrnInfoPtr pScrn)
 {
-	SCRN_INFO_PTR(arg);
 #ifdef ALP_DEBUG
 	ErrorF("AlpFreeScreen\n");
 #endif
@@ -1817,7 +1812,7 @@ AlpFreeScreen(FREE_SCREEN_ARGS_DECL)
 
 /* Optional */
 ModeStatus
-AlpValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode, Bool verbose, int flags)
+AlpValidMode(ScrnInfoPtr arg, DisplayModePtr mode, Bool verbose, int flags)
 {
 	int lace;
 

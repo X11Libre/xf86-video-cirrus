@@ -84,26 +84,26 @@
  * Mandatory functions
  */
 Bool LgPreInit(ScrnInfoPtr pScrn, int flags);
-Bool LgScreenInit(SCREEN_INIT_ARGS_DECL);
-Bool LgEnterVT(VT_FUNC_ARGS_DECL);
-void LgLeaveVT(VT_FUNC_ARGS_DECL);
-static Bool LgCloseScreen(CLOSE_SCREEN_ARGS_DECL);
+Bool LgScreenInit(ScreenPtr pScreen, int argc, char **argv);
+Bool LgEnterVT(ScrnInfoPtr arg);
+void LgLeaveVT(ScrnInfoPtr arg);
+static Bool LgCloseScreen(ScreenPtr pScreen);
 static Bool LgSaveScreen(ScreenPtr pScreen, Bool mode);
 
 /*
  * Required if the driver supports mode switching.
  */
-Bool LgSwitchMode(SWITCH_MODE_ARGS_DECL);
+Bool LgSwitchMode(ScrnInfoPtr arg, DisplayModePtr mode);
 /*
  * Required if the driver supports moving the viewport.
  */
-void LgAdjustFrame(ADJUST_FRAME_ARGS_DECL);
+void LgAdjustFrame(ScrnInfoPtr arg, int x, int y);
 
 /*
  * Optional functions
  */
-void LgFreeScreen(FREE_SCREEN_ARGS_DECL);
-ModeStatus LgValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode,
+void LgFreeScreen(ScrnInfoPtr arg);
+ModeStatus LgValidMode(ScrnInfoPtr arg, DisplayModePtr mode,
                         Bool verbose, int flags);
 
 /*
@@ -353,7 +353,7 @@ LgDoDDC(ScrnInfoPtr pScrn)
     /*
      * Read and output monitor info using DDC2 over I2C bus.
      */
-    MonInfo = xf86DoEDID_DDC2(XF86_SCRN_ARG(pScrn), pCir->I2CPtr1);
+    MonInfo = xf86DoEDID_DDC2(pScrn, pCir->I2CPtr1);
     if (!MonInfo) {
         xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
                     "Failed to obtain EDID.\n");
@@ -1571,7 +1571,7 @@ LgRestore(ScrnInfoPtr pScrn)
  * Mandatory
  */
 Bool
-LgScreenInit(SCREEN_INIT_ARGS_DECL)
+LgScreenInit(ScreenPtr pScreen, int argc, char **argv)
 {
     /*
      * The vgaHW references will disappear one day
@@ -1632,9 +1632,7 @@ LgScreenInit(SCREEN_INIT_ARGS_DECL)
     /*
      * Set the viewport.
      */
-    LgAdjustFrame(ADJUST_FRAME_ARGS(pScrn,
-                                    pScrn->frameX0,
-                                    pScrn->frameY0));
+    LgAdjustFrame(pScrn, pScrn->frameX0, pScrn->frameY0);
 
     /*
      * The next step is to setup the screen's visuals, and initialise
@@ -1807,9 +1805,8 @@ LgScreenInit(SCREEN_INIT_ARGS_DECL)
  * Usually mandatory
  */
 Bool
-LgSwitchMode(SWITCH_MODE_ARGS_DECL)
+LgSwitchMode(ScrnInfoPtr pScrn, DisplayModePtr mode)
 {
-    SCRN_INFO_PTR(arg);
     return LgModeInit(pScrn, mode);
 }
 
@@ -1823,8 +1820,7 @@ LgSwitchMode(SWITCH_MODE_ARGS_DECL)
 /*
  * Usually mandatory
  */
-void LgAdjustFrame(ADJUST_FRAME_ARGS_DECL) {
-    SCRN_INFO_PTR(arg);
+void LgAdjustFrame(ScrnInfoPtr pScrn, int x, int y) {
     int Base, tmp;
     CirPtr pCir = CIRPTR(pScrn);
     vgaHWPtr hwp = VGAHWPTR(pScrn);
@@ -1933,9 +1929,8 @@ void LgAdjustFrame(ADJUST_FRAME_ARGS_DECL) {
  * Mandatory
  */
 Bool
-LgEnterVT(VT_FUNC_ARGS_DECL)
+LgEnterVT(ScrnInfoPtr pScrn)
 {
-    SCRN_INFO_PTR(arg);
     CirPtr pCir = CIRPTR(pScrn);
 #ifdef LG_DEBUG
     ErrorF("LgEnterVT\n");
@@ -1964,8 +1959,7 @@ LgEnterVT(VT_FUNC_ARGS_DECL)
 /*
  * Mandatory
  */
-void LgLeaveVT(VT_FUNC_ARGS_DECL) {
-    SCRN_INFO_PTR(arg);
+void LgLeaveVT(ScrnInfoPtr pScrn) {
     vgaHWPtr hwp = VGAHWPTR(pScrn);
     CirPtr pCir = CIRPTR(pScrn);
 #ifdef LG_DEBUG
@@ -1996,7 +1990,7 @@ void LgLeaveVT(VT_FUNC_ARGS_DECL) {
  * Mandatory
  */
 static Bool
-LgCloseScreen(CLOSE_SCREEN_ARGS_DECL)
+LgCloseScreen(ScreenPtr pScreen)
 {
     ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
     vgaHWPtr hwp = VGAHWPTR(pScrn);
@@ -2023,7 +2017,7 @@ LgCloseScreen(CLOSE_SCREEN_ARGS_DECL)
     pScrn->vtSema = FALSE;
 
     pScreen->CloseScreen = pCir->CloseScreen;
-    return (*pScreen->CloseScreen)(CLOSE_SCREEN_ARGS);
+    return (*pScreen->CloseScreen)(pScreen);
 }
 
 /*
@@ -2033,9 +2027,8 @@ LgCloseScreen(CLOSE_SCREEN_ARGS_DECL)
  * Optional
  */
 void
-LgFreeScreen(FREE_SCREEN_ARGS_DECL)
+LgFreeScreen(ScrnInfoPtr pScrn)
 {
-    SCRN_INFO_PTR(arg);
 #ifdef LG_DEBUG
     ErrorF("LgFreeScreen\n");
 #endif
@@ -2055,7 +2048,7 @@ LgFreeScreen(FREE_SCREEN_ARGS_DECL)
  * Optional
  */
 ModeStatus
-LgValidMode(SCRN_ARG_TYPE arg, DisplayModePtr mode,
+LgValidMode(ScrnInfoPtr arg, DisplayModePtr mode,
             Bool verbose, int flags)
 {
     int lace;

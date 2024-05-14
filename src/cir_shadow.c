@@ -53,9 +53,8 @@ cirRefreshArea(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 } 
 
 _X_EXPORT void
-cirPointerMoved(SCRN_ARG_TYPE arg, int x, int y)
+cirPointerMoved(ScrnInfoPtr pScrn, int x, int y)
 {
-    SCRN_INFO_PTR(arg);
     CirPtr pCir = CIRPTR(pScrn);
     int newX, newY;
 
@@ -67,7 +66,7 @@ cirPointerMoved(SCRN_ARG_TYPE arg, int x, int y)
 	newY = pScrn->pScreen->width - x - 1;
     }
 
-    (*pCir->PointerMoved)(arg, newX, newY);
+    (*pCir->PointerMoved)(pScrn, newX, newY);
 }
 
 _X_EXPORT void
