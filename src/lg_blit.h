@@ -75,7 +75,7 @@ enum {						/* OR these together to form a bitBLT mode */
 								   still around, even in the '64 and the '65.
 								   It's a performance option, anyway, so not
 								   using it should be okay. */
-					
+
 
 	BLITUP			= 0x8000	/* The blit is proceeding from bottom to top */
 };

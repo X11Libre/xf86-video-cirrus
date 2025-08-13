@@ -34,7 +34,7 @@
 #include "cir.h"
 #include "dgaproc.h"
 
-static Bool Cir_OpenFramebuffer(ScrnInfoPtr, char **, unsigned char **, 
+static Bool Cir_OpenFramebuffer(ScrnInfoPtr, char **, unsigned char **,
 				  int *, int *, int *);
 static Bool Cir_SetMode(ScrnInfoPtr, DGAModePtr);
 static int  Cir_GetViewport(ScrnInfoPtr);
@@ -66,7 +66,7 @@ CirDGAInit(ScreenPtr pScreen)
   int imlines =  (pScrn->videoRam * 1024) /
        (pScrn->displayWidth * (pScrn->bitsPerPixel >> 3));
 
-  
+
   if (!pCir->DGAnumModes) {
     pMode = firstMode = pScrn->modes;
     while (pMode) {
@@ -101,15 +101,15 @@ CirDGAInit(ScreenPtr pScreen)
       currentMode->offset           = 0;
       currentMode->address          = pCir->FbBase;
       currentMode->bytesPerScanline = ((pScrn->displayWidth * Bpp) + 3) & ~3L;
-      currentMode->pixmapWidth      = currentMode->imageWidth 
+      currentMode->pixmapWidth      = currentMode->imageWidth
 	                               = pScrn->displayWidth;
       currentMode->pixmapHeight     = currentMode->imageHeight = imlines;
-      currentMode->maxViewportX     = currentMode->imageWidth - 
+      currentMode->maxViewportX     = currentMode->imageWidth -
                                       currentMode->viewportWidth;
       /* this might need to get clamped to some maximum */
       currentMode->maxViewportY     = currentMode->imageHeight -
                                       currentMode->viewportHeight;
-      
+
       pMode = pMode->next;
       if(pMode == firstMode)
 	break;
@@ -120,9 +120,9 @@ CirDGAInit(ScreenPtr pScreen)
   return DGAInit(pScreen, &CirDGAFuncs, pCir->DGAModes, pCir->DGAnumModes);
 }
 
-static Bool 
+static Bool
 Cir_OpenFramebuffer(
-   ScrnInfoPtr pScrn, 
+   ScrnInfoPtr pScrn,
    char **name,
    unsigned char **mem,
    int *size,
@@ -162,7 +162,7 @@ Cir_SetMode(
 
 	    pCir->DGAactive = TRUE;
 	}
-	pScrn->displayWidth = pMode->bytesPerScanline / 
+	pScrn->displayWidth = pMode->bytesPerScanline /
 			      (pMode->bitsPerPixel >> 3);
 
 	ret = pCir->DGAModeInit(xf86Screens[index], pMode->mode);
@@ -170,10 +170,10 @@ Cir_SetMode(
    return ret;
 }
 
-static void 
+static void
 Cir_SetViewport(
-   ScrnInfoPtr pScrn, 
-   int x, int y, 
+   ScrnInfoPtr pScrn,
+   int x, int y,
    int flags
 ){
    CirPtr pCir = CIRPTR(pScrn);
@@ -187,7 +187,7 @@ Cir_SetViewport(
    pCir->DGAViewportStatus = 0;  /* AdjustFrame loops until finished */
 }
 
-static int  
+static int
 Cir_GetViewport(
   ScrnInfoPtr pScrn
 ){
