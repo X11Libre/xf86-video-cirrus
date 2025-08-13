@@ -184,13 +184,13 @@ CIRProbe(DriverPtr drv, int flags)
 #ifdef CIR_DEBUG
     ErrorF("CirProbe\n");
 #endif
-  
+
     if ((numDevSections = xf86MatchDevice(CIR_DRIVER_NAME,
 					  &devSections)) <= 0) {
 	return FALSE;
     }
 
-#ifndef XSERVER_LIBPCIACCESS    
+#ifndef XSERVER_LIBPCIACCESS
     if (xf86GetPciVideoInfo() == NULL) {
 	/*
 	 * We won't let anything in the config file override finding no
@@ -199,7 +199,7 @@ CIRProbe(DriverPtr drv, int flags)
 	return FALSE;
     }
 #endif
-  
+
     numUsed = xf86MatchPciInstances(CIR_NAME, PCI_VENDOR_CIRRUS,
 				    CIRChipsets, CIRPciChipsets, devSections,
  				    numDevSections, drv, &usedChips);
@@ -239,7 +239,7 @@ CIRProbe(DriverPtr drv, int flags)
  	} else {
  	    pScrn = AlpProbe(usedChips[i]);
  	}
- 	
+
  	if (pScrn) {
  	    foundScreen = TRUE;
  	    /* Fill in what we can of the ScrnInfoRec */
@@ -251,7 +251,7 @@ CIRProbe(DriverPtr drv, int flags)
     }
     free(devSections);
     free(usedChips);
-     
+
     return foundScreen;
 }
 
@@ -272,7 +272,7 @@ CirMapMem(CirPtr pCir, int scrnIndex)
 	if (pCir->FbMapSize) {
 
 #ifndef XSERVER_LIBPCIACCESS
-	    
+
 	    pCir->FbBase = xf86MapPciMem(scrnIndex, VIDMEM_FRAMEBUFFER,
 					 pCir->PciTag, pCir->FbAddress,
 					 pCir->FbMapSize);
@@ -288,11 +288,11 @@ CirMapMem(CirPtr pCir, int scrnIndex)
 					   PCI_DEV_MAP_FLAG_WRITE_COMBINE,
 					   result);
 
-	    if (err) 
+	    if (err)
 	      return FALSE;
 #endif
 	}
-	
+
 #ifdef CIR_DEBUG
 	ErrorF("CirMapMem pCir->FbBase=0x%08x\n", pCir->FbBase);
 #endif
@@ -324,10 +324,10 @@ CirMapMem(CirPtr pCir, int scrnIndex)
 					       pCir->IoMapSize,
 					       PCI_DEV_MAP_FLAG_WRITABLE,
 					       result);
-		
-		if (err) 
+
+		if (err)
 			return FALSE;
-		
+
 #endif
 	}
 

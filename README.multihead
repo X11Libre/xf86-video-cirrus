@@ -23,7 +23,7 @@ not do it right too. I tried it with a 5465 (AGP)
 as a primary and 5446B (PCI) secondary on an
 ABIT LX6 upgraded to the latest bios.
 
-Version A of the 5446 cannot be pure MMIO (The driver 
+Version A of the 5446 cannot be pure MMIO (The driver
 requires that it is the primary display adapter).
 You can distinguish between the rel A and rel B by
 running "scanpci -v". Version 1 does not report a

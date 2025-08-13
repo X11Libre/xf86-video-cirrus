@@ -49,7 +49,7 @@ enum {
 	CURSOR_CONTROL		= 0x00E6,
   CURSOR_ADDR        = 0x00E8
 };
-  
+
 
 static void
 LgFindCursorTile(ScrnInfoPtr pScrn, int *x, int *y, int *width, int *height,
@@ -90,12 +90,12 @@ static void LgSetCursorColors(ScrnInfoPtr pScrn, int bg, int fg)
  * Set the (x,y) position of the pointer.
  *
  * Note:  (x,y) are /frame/ relative, not /framebuffer/ relative.
- * That is, if the virtual desktop has been panned all the way to 
- * the right, and the pointer is to be in the upper-right hand corner 
+ * That is, if the virtual desktop has been panned all the way to
+ * the right, and the pointer is to be in the upper-right hand corner
  * of the viewable screen, the pointer coords are (0,0) (even though
  * the pointer is on, say (550,0) wrt the frame buffer).  This is, of
  * course, a /good/ thing -- we don't want to have to deal with where
- * the virtual display is, etc, in the cursor code. 
+ * the virtual display is, etc, in the cursor code.
  *
  */
 static void LgSetCursorPosition(ScrnInfoPtr pScrn, int x, int y)
@@ -170,7 +170,7 @@ static void LgLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *bits)
   /* Destination */
   LgSETMDSTXY(pLg->HWCursorImageX+pLg->HWCursorTileWidth, pLg->HWCursorImageY);
 
-  /* Set the source pitch.  0 means that, worst case, the source is 
+  /* Set the source pitch.  0 means that, worst case, the source is
      aligned only on a byte boundary */
   LgSETMPHASE1(0);
 
@@ -178,19 +178,19 @@ static void LgLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *bits)
 
   for (l = 0; l < CURSORHEIGHT; l++) {
     /* Plane 0 */
-    for (w = 0; w < CURSORWIDTH >> 5; w++) 
+    for (w = 0; w < CURSORWIDTH >> 5; w++)
       memwl(HOSTDATA, 0x00000000);
     /* Plane 1 */
-    for (w = 0; w < CURSORWIDTH >> 5; w++) 
+    for (w = 0; w < CURSORWIDTH >> 5; w++)
       memwl(HOSTDATA, 0x00000000);
   }
 
   /* Now, copy the real cursor image */
-    
+
   /* Set the destination */
   LgSETMDSTXY(pLg->HWCursorImageX, pLg->HWCursorImageY);
 
-  /* Set the source pitch.  0 means that, worst case, the source is 
+  /* Set the source pitch.  0 means that, worst case, the source is
      aligned only on a byte boundary */
   LgSETMPHASE1(0);
 
@@ -199,10 +199,10 @@ static void LgLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *bits)
 
   for (l = 0; l < CURSORHEIGHT; l++) {
     /* Plane 0 */
-    for (w = 0; w < CURSORWIDTH >> 5; w++) 
+    for (w = 0; w < CURSORWIDTH >> 5; w++)
       memwl(HOSTDATA, *pXCursorBits++);
     /* Plane 1 */
-    for (w = 0; w < CURSORWIDTH >> 5; w++) 
+    for (w = 0; w < CURSORWIDTH >> 5; w++)
       memwl(HOSTDATA, *pXCursorBits++);
   }
 
@@ -215,7 +215,7 @@ static void LgLoadCursorImage(ScrnInfoPtr pScrn, unsigned char *bits)
 /*
  * LgFindCursorTile() finds the tile of display memory that will be
  * used to load the pointer image into.  The tile chosen will be the
- * last tile in the last line of the frame buffer. 
+ * last tile in the last line of the frame buffer.
  */
 static void
 LgFindCursorTile(ScrnInfoPtr pScrn, int *x, int *y, int *width, int *height,
@@ -230,10 +230,10 @@ LgFindCursorTile(ScrnInfoPtr pScrn, int *x, int *y, int *width, int *height,
   int tilesPerLine = LgLineData[pLg->lineDataIndex].tilesPerLine;
   int filledOutTileLines, leftoverMem;
   int yTile, xTile;
-    
+
   filledOutTileLines = videoRam / (tilesPerLine * 2); /* tiles are 2K */
   leftoverMem = videoRam - filledOutTileLines*tilesPerLine*2;
-    
+
   if (leftoverMem > 0) {
     yTile = filledOutTileLines;
   } else {
@@ -262,14 +262,14 @@ LgFindCursorTile(ScrnInfoPtr pScrn, int *x, int *y, int *width, int *height,
     nIL = pLg->memInterleave==0x00? 1 : (pLg->memInterleave==0x40 ? 2 : 4);
 
 		if (PCI_CHIP_GD5465 == pCir->Chipset) {
-      /* The Where's The Cursor formula changed for the 5465.  It's really 
+      /* The Where's The Cursor formula changed for the 5465.  It's really
 	 kinda weird now. */
       unsigned long page, bank;
       unsigned int nX, nY;
-      
+
       nX = xTile * tileWidth;
       nY = yTile * tileHeight;
-      
+
       page = (nY / (tileHeight * nIL)) * tilesPerLine + nX / tileWidth;
       bank = (nX/tileWidth + nY/tileHeight) % nIL + page/(512*nIL);
       page = page & 0x1FF;
@@ -299,7 +299,7 @@ void LgHideCursor(ScrnInfoPtr pScrn)
      We don't just clear the cursor enable bit because doesn't work in some
      cases (like when switching back to text mode).
      */
-  
+
 #ifdef LG_CURSOR_DEBUG
   ErrorF("LgHideCursor\n");
 #endif
@@ -354,14 +354,14 @@ Bool LgHWCursorInit(ScreenPtr pScreen)
 
   infoPtr = xf86CreateCursorInfoRec();
   if(!infoPtr) return FALSE;
-  
+
 	pCir->CursorInfoRec = infoPtr;
 	LgFindCursorTile(pScrn, &pCir->chip.lg->HWCursorImageX, &pCir->chip.lg->HWCursorImageY,
 		   &pCir->chip.lg->HWCursorTileWidth, &pCir->chip.lg->HWCursorTileHeight,
 		   &pCir->chip.lg->HWCursorAddr);
   /* Keep only bits 22:10 of the address. */
   pCir->chip.lg->HWCursorAddr = (pCir->chip.lg->HWCursorAddr >> 8) & 0x7FFC;
-  
+
 	pCir->CursorIsSkewed = FALSE;
 
   infoPtr->MaxWidth = CURSORWIDTH;

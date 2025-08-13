@@ -1,5 +1,5 @@
 /*
-   Copyright (c) 1999,2000  The XFree86 Project Inc. 
+   Copyright (c) 1999,2000  The XFree86 Project Inc.
    based on code written by Mark Vojkovich <markv@valinux.com>
 */
 
@@ -23,7 +23,7 @@ cirRefreshArea(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 {
     CirPtr pCir = CIRPTR(pScrn);
     unsigned char *src, *dst;
-   
+
     int Bpp = pScrn->bitsPerPixel >> 3;
     int FBPitch = BitmapBytePad(pScrn->displayWidth * pScrn->bitsPerPixel);
 
@@ -50,7 +50,7 @@ cirRefreshArea(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 
         pbox++;
     }
-} 
+}
 
 _X_EXPORT void
 cirPointerMoved(ScrnInfoPtr pScrn, int x, int y)
@@ -119,7 +119,7 @@ cirRefreshArea8(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
 
         pbox++;
     }
-} 
+}
 
 
 _X_EXPORT void
@@ -216,13 +216,13 @@ cirRefreshArea24(ScrnInfoPtr pScrn, int num, BoxPtr pbox)
             int count = height;
             while(count--) {
                 dst[0] = src[0] | (src[1] << 8) | (src[2] << 16) |
-				(src[srcPitch] << 24);		
+				(src[srcPitch] << 24);
                 dst[1] = src[srcPitch + 1] | (src[srcPitch + 2] << 8) |
 				(src[srcPitch * 2] << 16) |
-				(src[(srcPitch * 2) + 1] << 24);		
+				(src[(srcPitch * 2) + 1] << 24);
                 dst[2] = src[(srcPitch * 2) + 2] | (src[srcPitch * 3] << 8) |
 				(src[(srcPitch * 3) + 1] << 16) |
-				(src[(srcPitch * 3) + 2] << 24);	
+				(src[(srcPitch * 3) + 2] << 24);
                 dst += 3;
                 src += srcPitch * 4;
             }

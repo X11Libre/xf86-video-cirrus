@@ -178,7 +178,7 @@ _X_EXPORT ScrnInfoPtr
 AlpProbe(int entity)
 {
     ScrnInfoPtr pScrn = NULL;
-    
+
     if ((pScrn = xf86ConfigPciEntity(pScrn, 0, entity, CIRPciChipsets,
 					   NULL,NULL, NULL, NULL, NULL))) {
 	pScrn->PreInit		= AlpPreInit;
@@ -237,7 +237,7 @@ AlpCountRam(ScrnInfoPtr pScrn)
     vgaHWPtr hwp = VGAHWPTR(pScrn);
     MessageType from;
     int videoram = 0;
-    
+
     /* Map the Alp memory and MMIO areas */
     pCir->FbMapSize = 1024*1024; /* XX temp */
     if (!pCir->IoMapSize)
@@ -265,7 +265,7 @@ AlpCountRam(ScrnInfoPtr pScrn)
     }
     xf86DrvMsg(pScrn->scrnIndex, from, "Memory Config reg 1 is 0x%02X\n",
 	       (unsigned int)pCir->chip.alp->sr0f);
-    
+
     switch (pCir->Chipset) {
     case PCI_CHIP_GD5430:
 /*  case PCI_CHIP_GD5440: */
@@ -281,7 +281,7 @@ AlpCountRam(ScrnInfoPtr pScrn)
 	    break;
 	}
 	break;
-	
+
     case PCI_CHIP_GD5434_4:
     case PCI_CHIP_GD5434_8:
     case PCI_CHIP_GD5436:
@@ -295,10 +295,10 @@ AlpCountRam(ScrnInfoPtr pScrn)
 		videoram = 4096;
 	    break;
 	}
-	
+
     case PCI_CHIP_GD5446:
 	videoram = 1024;
-	
+
 	if (pCir->chip.alp->sr17 != (CARD32)-1) {
 	    from = X_CONFIG;
 	    hwp->writeSeq(hwp, 0x17, pCir->chip.alp->sr17);
@@ -308,7 +308,7 @@ AlpCountRam(ScrnInfoPtr pScrn)
 	}
 	xf86DrvMsg(pScrn->scrnIndex, from, "Memory Config reg 2 is 0x%02X\n",
 		   (unsigned int)pCir->chip.alp->sr17);
-	
+
 	if ((pCir->chip.alp->sr0f & 0x18) == 0x18) {
 	    if (pCir->chip.alp->sr0f & 0x80) {
 		if (pCir->chip.alp->sr17 & 0x80)
@@ -323,7 +323,7 @@ AlpCountRam(ScrnInfoPtr pScrn)
 	    }
 	}
 	break;
-	
+
     case PCI_CHIP_GD5480:
 	if (pCir->chip.alp->sr17 != (CARD32)-1) {
 	    from = X_CONFIG;
@@ -343,7 +343,7 @@ AlpCountRam(ScrnInfoPtr pScrn)
 	if (pCir->chip.alp->sr17 & 0x80)
 	    videoram <<= 1;
 	break;
-	
+
     case PCI_CHIP_GD7548:
 	videoram = 1024;
 	switch (pCir->chip.alp->sr0f & 0x90) {
@@ -365,8 +365,8 @@ AlpCountRam(ScrnInfoPtr pScrn)
     /* UNMap the Alp memory and MMIO areas */
     if (!CirUnmapMem(pCir, pScrn->scrnIndex))
 	return 0;
-    vgaHWSetStdFuncs(hwp);    
-    
+    vgaHWSetStdFuncs(hwp);
+
     return videoram;
 }
 
@@ -563,7 +563,7 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 
 	if (!xf86SetDefaultVisual(pScrn, -1)) {
 		return FALSE;
-	} 
+	}
 	/* Collect all of the relevant option flags (fill in pScrn->options) */
 	xf86CollectOptions(pScrn, NULL);
 
@@ -573,12 +573,12 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 	memcpy(pCir->Options, CirOptions, sizeof(CirOptions));
 	xf86ProcessOptions(pScrn->scrnIndex, pScrn->options, pCir->Options);
 
-	if (!xf86IsPrimaryPci(pCir->PciInfo) 
+	if (!xf86IsPrimaryPci(pCir->PciInfo)
 	    && !(pInt || (xf86IsOptionSet(pCir->Options,OPTION_MEMCFG1)
 			   && xf86IsOptionSet(pCir->Options,OPTION_MEMCFG2))))
 	    return FALSE;
-					   
-	if (pScrn->depth == 8) 
+
+	if (pScrn->depth == 8)
 	    pScrn->rgbBits = 6;
 
 	from = X_DEFAULT;
@@ -689,17 +689,17 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
  	    } else {
  	        pCir->UseMMIO = FALSE;
  	        from1 = X_PROBED;
- 	    }	      
- 	} else {	        
+ 	    }
+ 	} else {
  	    pCir->UseMMIO = FALSE;
  	    from1 = X_PROBED;
- 	}	      
- 
+ 	}
+
  	if (pCir->UseMMIO) {
  		xf86DrvMsg(pScrn->scrnIndex, from1, "Using MMIO\n");
  		xf86DrvMsg(pScrn->scrnIndex, from, "MMIO registers at 0x%lX\n",
  			(unsigned long)pCir->IOAddress);
- 	} else 
+ 	} else
  	    xf86DrvMsg(pScrn->scrnIndex, from1, "Not Using MMIO\n");
 
 #ifndef XSERVER_LIBPCIACCESS
@@ -725,12 +725,12 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 	 AlpFreeRec(pScrn);
  	return FALSE;
      }
- 
+
      if (!xf86LoadSubModule(pScrn, "ddc")) {
  	AlpFreeRec(pScrn);
  	return FALSE;
      }
- 
+
      if(!AlpI2CInit(pScrn)) {
          xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
              "I2C initialization failed\n");
@@ -748,22 +748,22 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 	pCir->NoAccel = TRUE;
      }
 #endif
- 
+
      /* Probe the possible LCD display */
      AlpProbeLCD(pScrn);
 
 #ifdef CIRPROBEI2C
      CirProbeI2C(pScrn->scrnIndex);
 #endif
- 
+
      /* The gamma fields must be initialised when using the new cmap code */
      if (pScrn->depth > 1) {
  	Gamma zeros = {0.0, 0.0, 0.0};
- 
+
  	if (!xf86SetGamma(pScrn, zeros))
  	    return FALSE;
      }
- 
+
 	/* XXX If UseMMIO == TRUE and for any reason we cannot do MMIO,
 	   abort here */
 
@@ -771,13 +771,13 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 			      OPTION_SHADOW_FB,&pCir->shadowFB))
 	    xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "ShadowFB %s.\n",
 		       pCir->shadowFB ? "enabled" : "disabled");
-	    
+
 	if ((s = xf86GetOptValString(pCir->Options, OPTION_ROTATE))) {
 	    if(!xf86NameCmp(s, "CW")) {
 		/* accel is disabled below for shadowFB */
 		pCir->shadowFB = TRUE;
 		pCir->rotate = 1;
-		xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, 
+		xf86DrvMsg(pScrn->scrnIndex, X_CONFIG,
 			   "Rotating screen clockwise - acceleration disabled\n");
 	    } else if(!xf86NameCmp(s, "CCW")) {
 		pCir->shadowFB = TRUE;
@@ -787,7 +787,7 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 	    } else {
 		xf86DrvMsg(pScrn->scrnIndex, X_CONFIG, "\"%s\" is not a valid"
 			   "value for Option \"Rotate\"\n", s);
-		xf86DrvMsg(pScrn->scrnIndex, X_INFO, 
+		xf86DrvMsg(pScrn->scrnIndex, X_INFO,
 			   "Valid options are \"CW\" or \"CCW\"\n");
 	    }
 	}
@@ -809,7 +809,7 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 		       "HW cursor not supported with \"rotate\".\n");
 	    pCir->HWCursor = FALSE;
 	}
-	
+
 	/* XXX We do not know yet how to configure memory on this card.
 	   Use options MemCFG1 and MemCFG2 to set registers SR0F and
 	   SR17 before trying to count ram size. */
@@ -856,7 +856,7 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 
      /* We use a programmable clock */
      pScrn->progClock = TRUE;
- 
+
 	/* XXX Set HW cursor use */
 
 	/* Set the min pixel clock */
@@ -1068,7 +1068,7 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 static void
 AlpSave(ScrnInfoPtr pScrn)
 {
-	CirPtr pCir = CIRPTR(pScrn); 
+	CirPtr pCir = CIRPTR(pScrn);
 	vgaHWPtr hwp = VGAHWPTR(pScrn);
 
 #ifdef ALP_DEBUG
@@ -1134,9 +1134,9 @@ alpRestore(vgaHWPtr hwp, AlpRegPtr cirReg)
     /* The first 4 reads are for the pixel mask register. After 4 times that
        this register is accessed in succession reading/writing this address
        accesses the HDR. */
-    hwp->readDacMask(hwp); 
-    hwp->readDacMask(hwp); 
-    hwp->readDacMask(hwp); 
+    hwp->readDacMask(hwp);
+    hwp->readDacMask(hwp);
+    hwp->readDacMask(hwp);
     hwp->readDacMask(hwp);
     hwp->writeDacMask(hwp, cirReg->ExtVga[HDR ]);
 }
@@ -1345,7 +1345,7 @@ AlpModeInit(ScrnInfoPtr pScrn, DisplayModePtr mode)
 
 	/* Programme the registers */
 	vgaHWProtect(pScrn, TRUE);
-	hwp->writeMiscOut(hwp, hwp->ModeReg.MiscOutReg); 
+	hwp->writeMiscOut(hwp, hwp->ModeReg.MiscOutReg);
 	alpRestore(hwp,&pCir->chip.alp->ModeReg);
 	AlpSetClock(pCir, hwp, mode->SynthClock);
 
@@ -1383,7 +1383,7 @@ AlpRestore(ScrnInfoPtr pScrn)
 	vgaHWProtect(pScrn, TRUE);
 
 	alpRestore(hwp,alpReg);
-	
+
 	vgaHWRestore(pScrn, vgaReg, VGA_SR_ALL);
 	vgaHWProtect(pScrn, FALSE);
 }
@@ -1404,14 +1404,14 @@ AlpScreenInit(ScreenPtr pScreen, int argc, char **argv)
 	int displayWidth,width,height;
 	unsigned char * FbBase = NULL;
 	int cursor_size = 0;
-	
+
 #ifdef ALP_DEBUG
 	ErrorF("AlpScreenInit\n");
 #endif
 
 	hwp = VGAHWPTR(pScrn);
 	pCir = CIRPTR(pScrn);
-	
+
 	/* Map the VGA memory when the primary video */
 	if (!vgaHWMapMem(pScrn))
 	    return FALSE;
@@ -1478,7 +1478,7 @@ AlpScreenInit(ScreenPtr pScreen, int argc, char **argv)
 	    width = pScrn->virtualX;
 	    height = pScrn->virtualY;
 	}
-	
+
 	if(pCir->shadowFB) {
 	    pCir->ShadowPitch = BitmapBytePad(pScrn->bitsPerPixel * width);
 	    pCir->ShadowPtr = malloc(pCir->ShadowPitch * height);
@@ -1488,7 +1488,7 @@ AlpScreenInit(ScreenPtr pScreen, int argc, char **argv)
 	    pCir->ShadowPtr = NULL;
 	    FbBase = pCir->FbBase;
 	}
-	
+
 	/*
 	 * Call the framebuffer layer's ScreenInit function, and fill in other
 	 * pScreen fields.
@@ -1539,17 +1539,17 @@ AlpScreenInit(ScreenPtr pScreen, int argc, char **argv)
 	/* must be after RGB ordering fixed */
 	if (init_picture)
 		fbPictureInit (pScreen, 0, 0);
-    
+
 	/*
 	 * Set initial black & white colourmap indices.
 	 */
 	xf86SetBlackWhitePixels(pScreen);
 
-	/* 
+	/*
 	   Allocation of off-screen memory to various stuff
 	   (hardware cursor, 8x8 mono pattern...)
 	   Allocation goes top-down in memory, since the cursor
-	   *must* be in the last videoram locations 
+	   *must* be in the last videoram locations
 	*/
 	pCir->offscreen_offset = pScrn->videoRam*1024;
 	pCir->offscreen_size = pScrn->videoRam * 1024 - pScrn->virtualY *
@@ -1559,11 +1559,11 @@ AlpScreenInit(ScreenPtr pScreen, int argc, char **argv)
 	ErrorF("offscreen_offset=%d, offscreen_size=%d\n",
 	       pCir->offscreen_offset, pCir->offscreen_size);
 #endif
-	    
+
 	/* Initialise cursor functions */
 	if (pCir->HWCursor) { /* Initialize HW cursor layer */
-	
-	    if ((pCir->properties & HWCUR64) 
+
+	    if ((pCir->properties & HWCUR64)
 		&& (pCir->offscreen_size >= 64*8*2)) {
 	        cursor_size = 64;
 	        pCir->offscreen_size -= 64*8*2;
@@ -1582,7 +1582,7 @@ AlpScreenInit(ScreenPtr pScreen, int argc, char **argv)
 #if 1
 	pCir->DGAModeInit = AlpModeInit;
 	if (!CirDGAInit(pScreen))
-	  xf86DrvMsg(pScrn->scrnIndex, X_ERROR, 
+	  xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
 		     "DGA initialization failed\n");
 #endif
         xf86SetSilkenMouse(pScreen);
@@ -1593,7 +1593,7 @@ AlpScreenInit(ScreenPtr pScreen, int argc, char **argv)
 	if (pCir->HWCursor) {
 	    if (!AlpHWCursorInit(pScreen, cursor_size))
 	        xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-			   "Hardware cursor initialization failed\n"); 
+			   "Hardware cursor initialization failed\n");
 #ifdef ALP_DEBUG
 	    ErrorF("AlpHWCursorInit() complete\n");
 #endif
@@ -1601,13 +1601,13 @@ AlpScreenInit(ScreenPtr pScreen, int argc, char **argv)
 
 	if (pCir->shadowFB) {
 	    RefreshAreaFuncPtr refreshArea = cirRefreshArea;
-	    
+
 	    if(pCir->rotate) {
 		if (!pCir->PointerMoved) {
 		    pCir->PointerMoved = pScrn->PointerMoved;
 		    pScrn->PointerMoved = cirPointerMoved;
 		}
-		
+
 		switch(pScrn->bitsPerPixel) {
 		case 8:	refreshArea = cirRefreshArea8;	break;
 		case 16:	refreshArea = cirRefreshArea16;	break;
@@ -1615,7 +1615,7 @@ AlpScreenInit(ScreenPtr pScreen, int argc, char **argv)
 		case 32:	refreshArea = cirRefreshArea32;	break;
 		}
 	    }
-	    
+
 	    ShadowFBInit(pScreen, refreshArea);
 	}
 
@@ -1724,7 +1724,7 @@ AlpEnterVT(ScrnInfoPtr pScrn)
 	/* Should we re-save the text mode on each VT enter? */
 	if (!(ret = AlpModeInit(pScrn, pScrn->currentMode)))
 		return FALSE;
-	
+
 	if (!pCir->NoAccel)
 		pCir->InitAccel(pScrn);
 
@@ -1953,7 +1953,7 @@ static void AlpProbeI2C(int scrnIndex)
 static void
 AlpProbeLCD(ScrnInfoPtr pScrn)
 {
-    CirPtr pCir = CIRPTR(pScrn); 
+    CirPtr pCir = CIRPTR(pScrn);
     AlpPtr pAlp = ALPPTR(pCir);
 
     vgaHWPtr hwp = VGAHWPTR(pScrn);
@@ -2005,7 +2005,7 @@ AlpProbeLCD(ScrnInfoPtr pScrn)
 	      pAlp->lcdHeight = 0;
 	      break;
 	}
-	
+
 	/* Disable LCD control registers */
 	hwp->writeCrtc(hwp, 0x2D, lcdCrtl);
 	break;

@@ -43,12 +43,12 @@ AlpSetCursorColors(ScrnInfoPtr pScrn, int bg, int fg)
 
 static void
 AlpLoadSkewedCursor(CirPtr pCir, int x, int y) {
-     
+
     const AlpPtr pAlp = ALPPTR(pCir);
 
     unsigned char *memx = pAlp->HWCursorBits;
         unsigned char *CursorBits = pAlp->CursorBits;
- 
+
         unsigned char mem[2*MAXCURSORSIZE];
 	unsigned char *p1, *p2;
 	int i, a, b;
@@ -87,7 +87,7 @@ AlpLoadSkewedCursor(CirPtr pCir, int x, int y) {
 	    /* last cursor  byte */
 	    *p1++ = (p2[0] << b);
 	}
-	
+
 	/* Clear to end (bottom) of cursor. */
 	for (i = i+1; i < CURSORSIZE; i++)
 		*p1++ = 0;
@@ -202,7 +202,7 @@ AlpHWCursorInit(ScreenPtr pScreen, int size)
 	ScrnInfoPtr pScrn = xf86ScreenToScrn(pScreen);
 	const CirPtr pCir = CIRPTR(pScrn);
 	const AlpPtr pAlp = ALPPTR(pCir);
-	
+
 	xf86CursorInfoPtr infoPtr;
 
 #ifdef ALP_DEBUG
@@ -221,20 +221,20 @@ AlpHWCursorInit(ScreenPtr pScreen, int size)
 	    CURSORWIDTH = CURSORHEIGHT = 64;
 	else
 	    CURSORWIDTH = CURSORHEIGHT = 32;
-	
+
 	pAlp->HWCursorBits = pCir->FbBase + 1024*pScrn->videoRam - 2*CURSORSIZE;
 
 	infoPtr->MaxWidth = CURSORWIDTH;
 	infoPtr->MaxHeight = CURSORHEIGHT;
 	if (CURSORWIDTH == 64)
-	    infoPtr->Flags = 
+	    infoPtr->Flags =
 #if X_BYTE_ORDER == X_LITTLE_ENDIAN
 		    HARDWARE_CURSOR_BIT_ORDER_MSBFIRST |
 #endif
 		    HARDWARE_CURSOR_SOURCE_MASK_INTERLEAVE_64 |
 		    HARDWARE_CURSOR_TRUECOLOR_AT_8BPP;
 	else
-		infoPtr->Flags = 
+		infoPtr->Flags =
 #if X_BYTE_ORDER == X_LITTLE_ENDIAN
 		    HARDWARE_CURSOR_BIT_ORDER_MSBFIRST |
 #endif
