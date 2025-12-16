@@ -2,7 +2,7 @@
 .ds q \N'34'
 .TH CIRRUS __drivermansuffix__ 2009-05-07 __vendorversion__
 .SH NAME
-cirrus \- Cirrus Logic video driver for Xorg
+cirrus \- Cirrus Logic video driver for XLibre
 .SH SYNOPSIS
 .nf
 .B "Section \*qDevice\*q"
@@ -13,7 +13,7 @@ cirrus \- Cirrus Logic video driver for Xorg
 .fi
 .SH DESCRIPTION
 .B cirrus
-is an Xorg driver for Cirrus Logic video chips.
+is an XLibre driver for Cirrus Logic video chips.
 THIS MAN PAGE NEEDS TO BE FILLED IN.
 .SH SUPPORTED HARDWARE
 The
@@ -25,7 +25,7 @@ Please refer to
 for general configuration details.
 This section only covers configuration details specific to this driver.
 .SH "SEE ALSO"
-.BR Xorg (1),
+.BR XLibre (1),
 .BR xorg.conf (__filemansuffix__),
 .BR Xserver (1),
 .BR X (__miscmansuffix__)
