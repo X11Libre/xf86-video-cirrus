@@ -435,10 +435,6 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
      * Find the PCI info for this screen.
      */
     pCir->PciInfo = xf86GetPciInfoForEntity(pCir->pEnt->index);
-#ifndef XSERVER_LIBPCIACCESS
-    pCir->PciTag = pciTag(PCI_DEV_BUS(pCir->PciInfo),
-            PCI_DEV_DEV(pCir->PciInfo), PCI_DEV_FUNC(pCir->PciInfo));
-#endif
 
     if (xf86LoadSubModule(pScrn, "int10")) {
         xf86Int10InfoPtr int10InfoPtr;
@@ -689,24 +685,6 @@ LgPreInit(ScrnInfoPtr pScrn, int flags)
      */
     pCir->IoMapSize = 0x4000;
 
-#ifndef XSERVER_LIBPCIACCESS
-    pScrn->racIoFlags = RAC_COLORMAP
-#ifndef EXPERIMENTAL
-            | RAC_VIEWPORT
-#endif
-            ;
-    xf86SetOperatingState(resVgaMem, pCir->pEnt->index, ResUnusedOpr);
-
-    /*
-     * Register the PCI-assigned resources.
-     */
-    if (xf86RegisterResources(pCir->pEnt->index, NULL, ResExclusive)) {
-        xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-                    "xf86RegisterResources() found resource "
-                    "conflicts\n");
-        return FALSE;
-    }
-#endif
     if (!xf86LoadSubModule(pScrn, "ddc")) {
         LgFreeRec(pScrn);
         return FALSE;

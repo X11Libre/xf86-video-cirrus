@@ -183,16 +183,6 @@ CIRProbe(DriverPtr drv, int flags)
 	return FALSE;
     }
 
-#ifndef XSERVER_LIBPCIACCESS
-    if (xf86GetPciVideoInfo() == NULL) {
-	/*
-	 * We won't let anything in the config file override finding no
-	 * PCI video cards at all.  This seems reasonable now, but we'll see.
-	 */
-	return FALSE;
-    }
-#endif
-
     numUsed = xf86MatchPciInstances(CIR_NAME, PCI_VENDOR_CIRRUS,
 				    CIRChipsets, CIRPciChipsets, devSections,
  				    numDevSections, drv, &usedChips);
@@ -211,7 +201,6 @@ CIRProbe(DriverPtr drv, int flags)
  	   own driver). */
 	pPci = xf86GetPciInfoForEntity(usedChips[i]);
 
-#ifdef XSERVER_LIBPCIACCESS
     if (pci_device_has_kernel_driver(pPci)) {
         xf86DrvMsg(0, X_ERROR,
                    "cirrus: The PCI device 0x%x at %2.2d@%2.2d:%2.2d:%1.1d has a kernel module claiming it.\n",
@@ -222,7 +211,6 @@ CIRProbe(DriverPtr drv, int flags)
         free(devSections);
         return FALSE;
     }
-#endif
 	pScrn = NULL;
  	if (pPci && (PCI_DEV_DEVICE_ID(pPci) == PCI_CHIP_GD5462 ||
 		     PCI_DEV_DEVICE_ID(pPci) == PCI_CHIP_GD5464 ||
@@ -264,15 +252,6 @@ CirMapMem(CirPtr pCir, int scrnIndex)
 	 */
 	if (pCir->FbMapSize) {
 
-#ifndef XSERVER_LIBPCIACCESS
-
-	    pCir->FbBase = xf86MapPciMem(scrnIndex, VIDMEM_FRAMEBUFFER,
-					 pCir->PciTag, pCir->FbAddress,
-					 pCir->FbMapSize);
-	    if (pCir->FbBase == NULL)
-		return FALSE;
-
-#else
 	    void** result = (void**)&pCir->FbBase;
 	    int err = pci_device_map_range(pCir->PciInfo,
 					   pCir->FbAddress,
@@ -283,7 +262,6 @@ CirMapMem(CirPtr pCir, int scrnIndex)
 
 	    if (err)
 	      return FALSE;
-#endif
 	}
 
 #ifdef CIR_DEBUG
@@ -296,21 +274,6 @@ CirMapMem(CirPtr pCir, int scrnIndex)
 	if (pCir->IOAddress == 0) {
 		pCir->IOBase = NULL; /* Until we are ready to use MMIO */
 	} else {
-
-#ifndef XSERVER_LIBPCIACCESS
-		/*
-		 * For Alpha, we need to map SPARSE memory, since we need
-		 * byte/short access.  Common-level will automatically use
-		 * sparse mapping for MMIO.
-		 */
-
-		pCir->IOBase =
-		  xf86MapPciMem(scrnIndex, VIDMEM_MMIO, pCir->PciTag,
-		       	        pCir->IOAddress, pCir->IoMapSize);
-		if (pCir->IOBase == NULL)
-			return FALSE;
-
-#else
 		void** result = (void**)&pCir->IOBase;
 		int err = pci_device_map_range(pCir->PciInfo,
 					       pCir->IOAddress,
@@ -320,8 +283,6 @@ CirMapMem(CirPtr pCir, int scrnIndex)
 
 		if (err)
 			return FALSE;
-
-#endif
 	}
 
 #ifdef CIR_DEBUG
@@ -350,19 +311,11 @@ CirUnmapMem(CirPtr pCir, int scrnIndex)
 		/*
 		 * Unmap IO registers to virtual address space
 		 */
-#ifndef XSERVER_LIBPCIACCESS
-		xf86UnMapVidMem(scrnIndex, (pointer)pCir->IOBase, pCir->IoMapSize);
-#else
 		pci_device_unmap_range(pCir->PciInfo, (pointer)pCir->IOBase, pCir->IoMapSize);
-#endif
 		pCir->IOBase = NULL;
 	}
 
-#ifndef XSERVER_LIBPCIACCESS
-	xf86UnMapVidMem(scrnIndex, (pointer)pCir->FbBase, pCir->FbMapSize);
-#else
 	pci_device_unmap_range(pCir->PciInfo, (pointer)pCir->FbBase, pCir->FbMapSize);
-#endif
 	pCir->FbBase = NULL;
 	return TRUE;
 }

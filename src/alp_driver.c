@@ -478,11 +478,6 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 	pCir->Chipset = pCir->pEnt->chipset;
 	/* Find the PCI info for this screen */
 	pCir->PciInfo = xf86GetPciInfoForEntity(pCir->pEnt->index);
-#ifndef XSERVER_LIBPCIACCESS
-	pCir->PciTag = pciTag(PCI_DEV_BUS(pCir->PciInfo),
-			      PCI_DEV_DEV(pCir->PciInfo),
-			      PCI_DEV_FUNC(pCir->PciInfo));
-#endif
 
     if (xf86LoadSubModule(pScrn, "int10"))
     {
@@ -695,25 +690,6 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
  	} else
  	    xf86DrvMsg(pScrn->scrnIndex, from1, "Not Using MMIO\n");
 
-#ifndef XSERVER_LIBPCIACCESS
-     /*
-      * XXX Check if this is correct
-      */
-     if (!pCir->UseMMIO) {
-         pScrn->racIoFlags = RAC_COLORMAP | RAC_CURSOR | RAC_VIEWPORT | RAC_FB;
-         xf86SetOperatingState(resVgaMem, pCir->pEnt->index, ResUnusedOpr);
-     } else {
-         xf86SetOperatingState(resVga, pCir->pEnt->index, ResUnusedOpr);
-     }
-
-     /* Register the PCI-assigned resources. */
-     if (xf86RegisterResources(pCir->pEnt->index, NULL, ResExclusive)) {
-	 xf86DrvMsg(pScrn->scrnIndex, X_ERROR,
-		    "xf86RegisterResources() found resource conflicts\n");
-	 return FALSE;
-     }
-#endif
-
      if (!xf86LoadSubModule(pScrn, "i2c")) {
 	 AlpFreeRec(pScrn);
  	return FALSE;
@@ -732,7 +708,6 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
  	xf86SetDDCproperties(pScrn,xf86PrintEDID(
 		 xf86DoEDID_DDC2(pScrn,pCir->I2CPtr1)));
 
-#ifdef XSERVER_LIBPCIACCESS
      #ifndef PCI_CHIP_QEMU
      #define PCI_CHIP_QEMU 0x1af4
      #endif
@@ -740,7 +715,6 @@ AlpPreInit(ScrnInfoPtr pScrn, int flags)
 	((pCir->PciInfo->subvendor_id & 0xffff) == PCI_CHIP_QEMU)) {
 	pCir->NoAccel = TRUE;
      }
-#endif
 
      /* Probe the possible LCD display */
      AlpProbeLCD(pScrn);
