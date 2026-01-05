@@ -120,8 +120,8 @@ static XF86ModuleVersionInfo cirVersRec =
  */
 _X_EXPORT XF86ModuleData cirrusModuleData = { &cirVersRec, cirSetup, NULL };
 
-static pointer
-cirSetup(pointer module, pointer opts, int *errmaj, int *errmin)
+static void*
+cirSetup(void *module, void *opts, int *errmaj, int *errmin)
 {
 	static Bool setupDone = FALSE;
 
@@ -131,7 +131,7 @@ cirSetup(pointer module, pointer opts, int *errmaj, int *errmin)
 		setupDone = TRUE;
 		xf86AddDriver(&CIRRUS, module, 0);
 
-		return (pointer)1;
+		return (void*)1;
 	}
 	if (errmaj) *errmaj = LDR_ONCEONLY;
 	return NULL;
@@ -311,11 +311,11 @@ CirUnmapMem(CirPtr pCir, int scrnIndex)
 		/*
 		 * Unmap IO registers to virtual address space
 		 */
-		pci_device_unmap_range(pCir->PciInfo, (pointer)pCir->IOBase, pCir->IoMapSize);
+		pci_device_unmap_range(pCir->PciInfo, (void*)pCir->IOBase, pCir->IoMapSize);
 		pCir->IOBase = NULL;
 	}
 
-	pci_device_unmap_range(pCir->PciInfo, (pointer)pCir->FbBase, pCir->FbMapSize);
+	pci_device_unmap_range(pCir->PciInfo, (void*)pCir->FbBase, pCir->FbMapSize);
 	pCir->FbBase = NULL;
 	return TRUE;
 }
