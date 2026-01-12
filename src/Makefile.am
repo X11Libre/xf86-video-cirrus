@@ -27,7 +27,7 @@ AM_CFLAGS = @XORG_CFLAGS@ $(CWARNFLAGS)
 
 cirrus_drv_la_LTLIBRARIES = cirrus_drv.la
 cirrus_drv_la_LDFLAGS = -module -avoid-version
-cirrus_drv_ladir = @moduledir@/drivers
+cirrus_drv_ladir = @xlibre_video_drivers_dir@
 cirrus_drv_la_SOURCES = \
          cir_dga.c \
          cir_driver.c \
