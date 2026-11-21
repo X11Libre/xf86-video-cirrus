@@ -133,34 +133,6 @@ static int gd7548_MaxClocks[] = {  80100,  80100,  80100,  80100,  80100 };
 static int gd7555_MaxClocks[] = {  80100,  80100,  80100,  80100,  80100 };
 static int gd7556_MaxClocks[] = {  80100,  80100,  80100,  80100,  80100 };
 
-#define ALP_MAJOR_VERSION 1
-#define ALP_MINOR_VERSION 0
-#define ALP_PATCHLEVEL 0
-
-static XF86ModuleVersionInfo alpVersRec =
-{
-	"cirrus_alpine",
-	MODULEVENDORSTRING,
-	MODINFOSTRING1,
-	MODINFOSTRING2,
-	XORG_VERSION_CURRENT,
-	ALP_MAJOR_VERSION, ALP_MINOR_VERSION, ALP_PATCHLEVEL,
-	ABI_CLASS_VIDEODRV,			/* This is a video driver */
-	ABI_VIDEODRV_VERSION,
-	MOD_CLASS_NONE,
-	{0,0,0,0}
-};
-
-/*
- * This is the module init data.
- * Its name has to be the driver name followed by ModuleData.
- */
-_X_EXPORT XF86ModuleData cirrus_alpineModuleData = {
-    &alpVersRec,
-    NULL,
-    NULL
-};
-
 _X_EXPORT const OptionInfoRec *
 AlpAvailableOptions(int chipid)
 {
