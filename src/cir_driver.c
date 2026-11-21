@@ -41,6 +41,7 @@ static Bool	CIRProbe(DriverPtr drv, int flags);
 #define CIR_MAJOR_VERSION PACKAGE_VERSION_MAJOR
 #define CIR_MINOR_VERSION PACKAGE_VERSION_MINOR
 #define CIR_PATCHLEVEL PACKAGE_VERSION_PATCHLEVEL
+#define CIR_VERSION_SUFFIX PACKAGE_VERSION_SUFFIX
 
 /*
  * This contains the functions needed by the server after loading the
@@ -119,6 +120,10 @@ static XF86ModuleVersionInfo cirVersRec =
  * Its name has to be the driver name followed by ModuleData.
  */
 _X_EXPORT XF86ModuleData cirrusModuleData = { &cirVersRec, cirSetup, NULL };
+
+#ifdef XF86_MODULE_VERSION_SUFFIX
+XF86_MODULE_VERSION_SUFFIX(cirrus, CIR_VERSION_SUFFIX);
+#endif
 
 static void*
 cirSetup(void *module, void *opts, int *errmaj, int *errmin)
