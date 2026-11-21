@@ -202,37 +202,6 @@ static int LgLinePitches[4][11] = {
     { 160,  256,  320,  416,  512,  640,  832, 1024, 1280, 1664, 0 }
 };
 
-#define LG_MAJOR_VERSION 1
-#define LG_MINOR_VERSION 0
-#define LG_PATCHLEVEL 0
-
-static XF86ModuleVersionInfo lgVersRec =
-{
-    "cirrus_laguna",
-    MODULEVENDORSTRING,
-    MODINFOSTRING1,
-    MODINFOSTRING2,
-    XORG_VERSION_CURRENT,
-    LG_MAJOR_VERSION, LG_MINOR_VERSION, LG_PATCHLEVEL,
-/*
- * This is a video driver.
- */
-    ABI_CLASS_VIDEODRV,
-    ABI_VIDEODRV_VERSION,
-    MOD_CLASS_NONE,
-    {0,0,0,0}
-};
-
-/*
- * This is the module init data.
- * Its name has to be the driver name followed by ModuleData.
- */
-_X_EXPORT XF86ModuleData cirrus_lagunaModuleData = {
-    &lgVersRec,
-    NULL,
-    NULL
-};
-
 _X_EXPORT const OptionInfoRec *
 LgAvailableOptions(int chipid) {
     return LgOptions;
